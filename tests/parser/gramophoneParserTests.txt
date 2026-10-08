@@ -1,0 +1,1130 @@
+# Parser tests for the Gramophone tags <gramophone> and <playbutton>, and for the tags it renders
+# for compatibility: <flashmp3>, <sm2> and <modernsoundmanager> of Sm2Shim and FlashMP3, and <ab>.
+#
+# The core parser test fixtures provide File:Audio.oga and File:Foobar.jpg.
+# Run with:
+#   php tests/parser/parserTests.php --file=extensions/Gramophone/tests/parser/gramophoneParserTests.txt
+
+!! options
+version=2
+!! end
+
+!! hooks
+gramophone
+playbutton
+flashmp3
+sm2
+modernsoundmanager
+!! endhooks
+
+!! article
+File:Redirect to audio.oga
+!! text
+#REDIRECT [[File:Audio.oga]]
+!! endarticle
+
+###
+### <gramophone> and <playbutton>
+###
+
+!! test
+gramophone: a file list reads like flashmp3, with options in the content and as attributes, without the lastfm switch
+!! options
+cat
+!! wikitext
+<gramophone loop="yes">Audio.oga,https://example.com/b.mp3|openplaylist=yes</gramophone>
+<gramophone type="lastfm">Audio.oga</gramophone>
+!! metadata
+cat=Pages_with_audio_players sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;loop&quot;:true,&quot;playlistOpen&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;https://example.com/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/b.mp3" rel="nofollow">b.mp3</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+gramophone: content that starts with { is a JSON playlist read like modernsoundmanager, also wholly inside nowiki
+!! wikitext
+<gramophone loop="yes">
+  {"isPlaylistOpen":true,"playlist":[{"audioFileUrl":"Audio.oga","title":"Port theme"}]}
+</gramophone>
+{{#tag:gramophone|<nowiki>{"playlist":[{"audioFileUrl":"https://example.com/b.mp3","title":"A | B {{x}}"}]}</nowiki>}}
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;playlistOpen&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Port theme&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Port theme</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/b.mp3&quot;,&quot;title&quot;:&quot;A | B {{x}}&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/b.mp3" rel="nofollow">A | B {{x}}</a></li></ol></div>
+!! end
+
+!! test
+playbutton: an inline button like sm2, with title and hidemissing
+!! wikitext
+Listen <playbutton>Audio.oga|title=Captain's greeting</playbutton> <playbutton hidemissing="yes">https://example.com/a.mp3</playbutton>
+!! html/php
+<p>Listen <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Captain&#39;s greeting&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Captain&#39;s greeting">Captain's greeting</a></span> <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" title="a.mp3" rel="nofollow">a.mp3</a></span>
+</p>
+!! end
+
+!! test
+With $wgGramophoneSm2ShimTags off, the Sm2Shim and FlashMP3 tags are plain text and playbutton still works
+!! config
+wgGramophoneSm2ShimTags=false
+!! wikitext
+<flashmp3>Audio.oga</flashmp3> <sm2>Audio.oga</sm2> <modernsoundmanager>{"playlist":[]}</modernsoundmanager> <playbutton>Audio.oga</playbutton>
+!! html/php
+<p>&lt;flashmp3&gt;Audio.oga&lt;/flashmp3&gt; &lt;sm2&gt;Audio.oga&lt;/sm2&gt; &lt;modernsoundmanager&gt;{"playlist":[]}&lt;/modernsoundmanager&gt; <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+###
+### <flashmp3>
+###
+
+!! test
+flashmp3: existing file, records file usage and the tracking category
+!! options
+cat
+showmedia
+!! wikitext
+<flashmp3>Audio.oga</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+images=Audio.oga
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: missing file renders a red link and adds the missing-file category
+!! options
+cat
+showmedia
+!! wikitext
+<flashmp3>Port-day.mp3</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+images=Port-day.mp3
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Port-day.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Port-day.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Port-day.mp3">Port-day.mp3</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: missing file without uploads links to the file page
+!! config
+wgEnableUploads=false
+!! wikitext
+<flashmp3>Port-day.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Port-day.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=File:Port-day.mp3\u0026action=edit\u0026redlink=1&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=File:Port-day.mp3&amp;action=edit&amp;redlink=1">Port-day.mp3</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: File, Image and Media prefixes resolve to the same file
+!! options
+showmedia
+!! wikitext
+<flashmp3>File:Audio.oga,Image:Audio.oga,Media:Audio.oga</flashmp3>
+!! metadata
+images=Audio.oga
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: 文件 prefix on a Chinese wiki
+!! options
+language=zh
+showmedia
+!! wikitext
+<flashmp3>文件:Audio.oga</flashmp3>
+!! metadata
+images=Audio.oga
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: quoted entries keep their commas, blank entries are dropped
+!! wikitext
+<flashmp3> "Audio.oga" , "https://example.com/a,b.mp3",, ,Missing.mp3 </flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;https://example.com/a,b.mp3&quot;,&quot;title&quot;:&quot;a,b.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Missing.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Missing.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/a,b.mp3" rel="nofollow">a,b.mp3</a></li><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Missing.mp3">Missing.mp3</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: options need the exact value yes
+!! wikitext
+<flashmp3>Audio.oga|autostart=yes|loop=yes|openplaylist=yes</flashmp3>
+<flashmp3>Audio.oga|autostart=Yes|loop=1|openplaylist=yes=no|unknown=yes</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;loop&quot;:true,&quot;playlistOpen&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: Flash-era colours are ignored by default, so the site theme applies
+!! wikitext
+<flashmp3>Audio.oga|bg=C4C4C4|leftbg=357DCE|rightbg=F06A51|text=000000|tracker=0x666666|track=0xFFFFFF</flashmp3>
+<sm2>Audio.oga|bg=fff|track=#3A7194</sm2>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+flashmp3: with $wgGramophoneLegacyColors, colours accept 3 or 6 hex digits with optional # or 0x prefix
+!! config
+wgGramophoneLegacyColors=true
+!! wikitext
+<flashmp3>Audio.oga|bg=0x98C5E9|text=#FFF|tracker=3a7194|track=zzz</flashmp3>
+<flashmp3>Audio.oga|bg=#12345|text=0x1234567|tracker=red|track= #AbC </flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;colors&quot;:{&quot;background&quot;:&quot;#98c5e9&quot;,&quot;foreground&quot;:&quot;#ffffff&quot;,&quot;track&quot;:&quot;#3a7194&quot;},&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;colors&quot;:{&quot;thumb&quot;:&quot;#aabbcc&quot;},&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: type="lastfm", empty and self-closed tags render nothing
+!! options
+cat
+!! wikitext
+<flashmp3 type="lastfm">Audio.oga</flashmp3><flashmp3></flashmp3><flashmp3/><flashmp3> |loop=yes</flashmp3>
+!! metadata
+!! html/php
+!! end
+
+!! test
+class and style attributes reach the host, sanitised as on a div, other attributes are ignored
+!! wikitext
+<flashmp3 class=" my-player  ext-gramophone 1 a&lt;b&gt;&quot;c " style="--gramophone-primary:#3a7194; font-family: serif" id="x" data-mw-gramophone="{}">Audio.oga</flashmp3>
+<sm2 style="--gramophone-cover-from:url(https://example.com/x.png)">Audio.oga</sm2> {{#tag:sm2|Audio.oga|class=from-template}}
+!! html/php
+<div class="ext-gramophone ext-gramophone-player my-player 1 a&lt;b&gt;&quot;c" style="--gramophone-primary:#3a7194; font-family: serif" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<p><span class="ext-gramophone ext-gramophone-button" style="/* insecure input */" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span> <span class="ext-gramophone ext-gramophone-button from-template" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+Options as tag attributes and #tag arguments, with the same value rules, and the content option wins
+!! wikitext
+<flashmp3 autostart="yes" loop=" yes " openplaylist="Yes">Audio.oga</flashmp3>
+{{#tag:sm2|https://example.com/a.mp3|hidemissing=yes|title=Greeting}} <sm2 hidemissing="yes">Audio.oga|hidemissing=no</sm2>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;loop&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;Greeting&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" title="Greeting" rel="nofollow">Greeting</a></span> <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+flashmp3: external URLs, with the title taken from the decoded last path segment
+!! options
+showmedia
+!! wikitext
+<flashmp3>https://example.com/music/%E6%B8%AF%E5%8C%BA.mp3,HTTP://EXAMPLE.COM/Song.MP3?x=1,https://example.com/</flashmp3>
+!! metadata
+images=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/music/%E6%B8%AF%E5%8C%BA.mp3&quot;,&quot;title&quot;:&quot;港区.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;HTTP://EXAMPLE.COM/Song.MP3?x=1&quot;,&quot;title&quot;:&quot;Song.MP3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://example.com/&quot;,&quot;title&quot;:&quot;example.com&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/music/%E6%B8%AF%E5%8C%BA.mp3" rel="nofollow">港区.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="HTTP://EXAMPLE.COM/Song.MP3?x=1" rel="nofollow">Song.MP3</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/" rel="nofollow">example.com</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: user input is escaped and unsafe URLs never become links
+!! wikitext
+<flashmp3>https://example.com/a.mp3?q=<b>&x='y',<script>alert(1)</script>.mp3,javascript:alert(1),"http://"</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3?q=%3Cb%3E\u0026x=&#39;y&#39;&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;\u003Cscript\u003Ealert(1)\u003C/script\u003E.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;javascript:alert(1)&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3?q=%3Cb%3E&amp;x=&#39;y&#39;" rel="nofollow">a.mp3</a></li><li><span class="new ext-gramophone-fallback-link">&lt;script&gt;alert(1)&lt;/script&gt;.mp3</span></li><li><span class="new ext-gramophone-fallback-link">javascript:alert(1)</span></li><li><span class="new ext-gramophone-fallback-link">http://</span></li></ol></div>
+!! end
+
+!! test
+flashmp3: a player on its own line between paragraphs
+!! wikitext
+Before.
+
+<flashmp3>Audio.oga</flashmp3>
+
+After.
+!! html/php
+<p>Before.
+</p>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<p>After.
+</p>
+!! end
+
+!! test
+flashmp3: a player inside a paragraph splits it like a literal div
+!! wikitext
+Text before <flashmp3>Audio.oga</flashmp3> text after.
+!! html/php
+<p>Text before </p><div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div><p> text after.</p>
+!! end
+
+###
+### <sm2>
+###
+
+!! test
+sm2: inline button in text
+!! options
+cat
+!! wikitext
+Listen <sm2>Audio.oga</sm2> here.
+!! metadata
+cat=Pages_with_audio_players sort=
+!! html/php
+<p>Listen <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span> here.
+</p>
+!! end
+
+!! test
+sm2: ignores autostart, loop and openplaylist, keeps colours with $wgGramophoneLegacyColors
+!! config
+wgGramophoneLegacyColors=true
+!! wikitext
+<sm2>Audio.oga|autostart=yes|loop=yes|openplaylist=yes|bg=fff|track=#3A7194</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;colors&quot;:{&quot;background&quot;:&quot;#ffffff&quot;,&quot;thumb&quot;:&quot;#3a7194&quot;},&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+sm2: hidemissing=yes lets the client hide the button when the file is missing, other values do not
+!! wikitext
+<sm2>https://example.com/a.mp3|hidemissing=yes</sm2> <sm2>Audio.oga|hidemissing=Yes</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" title="a.mp3" rel="nofollow">a.mp3</a></span> <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+sm2: title names the button instead of the file name, for each file it plays
+!! wikitext
+<sm2>Audio.oga,https://example.com/b.mp3|title=Captain's greeting</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Captain&#39;s greeting&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;https://example.com/b.mp3&quot;,&quot;title&quot;:&quot;Captain&#39;s greeting&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Captain&#39;s greeting">Captain's greeting</a><a class="ext-gramophone-fallback-link" href="https://example.com/b.mp3" title="Captain&#39;s greeting" rel="nofollow">Captain's greeting</a></span>
+</p>
+!! end
+
+!! test
+flashmp3: hidemissing is an sm2 option, the player ignores it
+!! wikitext
+<flashmp3>Audio.oga|hidemissing=yes</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+sm2: several files play in sequence from one button
+!! wikitext
+<sm2>Audio.oga,Missing.mp3,https://example.com/b.mp3</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Missing.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Missing.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;https://example.com/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Missing.mp3" title="Missing.mp3">Missing.mp3</a><a class="ext-gramophone-fallback-link" href="https://example.com/b.mp3" title="b.mp3" rel="nofollow">b.mp3</a></span>
+</p>
+!! end
+
+!! test
+sm2: buttons inside table cells
+!! wikitext
+{|
+| Line one || <sm2>Audio.oga</sm2>
+|-
+| Line two || <sm2>Missing.mp3</sm2> after
+|}
+!! html/php
+<table>
+<tbody><tr>
+<td>Line one</td>
+<td><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</td></tr>
+<tr>
+<td>Line two</td>
+<td><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Missing.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Missing.mp3&quot;,&quot;missing&quot;:true}]}"><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Missing.mp3" title="Missing.mp3">Missing.mp3</a></span> after
+</td></tr></tbody></table>
+!! end
+
+!! test
+sm2: a rejected entry is plain text, not a link without href
+!! wikitext
+<sm2>/\evil.example/a.mp3,Audio.oga</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/\\evil.example/a.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><span class="new ext-gramophone-fallback-link" title="/\evil.example/a.mp3">/\evil.example/a.mp3</span><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+sm2: empty and self-closed tags render nothing
+!! wikitext
+<sm2></sm2><sm2/><sm2> , </sm2>
+!! html/php
+!! end
+
+###
+### <ab> (AudioButton)
+###
+
+!! article
+Template:Gramophone voice
+!! text
+<ab>{{{1}}}</ab>
+!! endarticle
+
+!! test
+ab: with $wgGramophoneAudioButtonTag, an sm2 button for one whole file name, templates expanded, options as attributes
+!! config
+wgGramophoneAudioButtonTag=true
+!! wikitext
+{{Gramophone voice|Audio.oga}} <ab vol="0.45" preload="none" hidemissing="yes">Hello, world.mp3</ab>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span> <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Hello, world.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Hello,_world.mp3&quot;,&quot;missing&quot;:true}]}"><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Hello,_world.mp3" title="Hello, world.mp3">Hello, world.mp3</a></span>
+</p>
+!! end
+
+###
+### <modernsoundmanager>
+###
+
+!! test
+modernsoundmanager: every field, with internal audio, cover and page link
+!! options
+cat
+links
+showmedia
+!! wikitext
+<modernsoundmanager>
+{
+	"schemaVersion": 1,
+	"loop": true,
+	"autoPlay": true,
+	"isPlaylistOpen": true,
+	"backgroundColor": "#98C5E9",
+	"foregroundColor": "0x000",
+	"trackColor": "3A7194",
+	"thumbColor": "#fff",
+	"playlist": [
+		{
+			"audioFileUrl": "File:Audio.oga",
+			"title": "Port theme",
+			"artist": "Composer",
+			"album": "OST",
+			"isExplicit": true,
+			"lrcFileUrl": "https://example.com/port.lrc",
+			"lrcFileOffset": 250.6,
+			"navigationUrl": "Main Page#Music",
+			"coverImageUrl": "Foobar.jpg"
+		}
+	]
+}
+</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+link=Main_Page
+images=Audio.oga, Foobar.jpg
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;loop&quot;:true,&quot;playlistOpen&quot;:true,&quot;colors&quot;:{&quot;background&quot;:&quot;#98c5e9&quot;,&quot;foreground&quot;:&quot;#000000&quot;,&quot;track&quot;:&quot;#3a7194&quot;,&quot;thumb&quot;:&quot;#ffffff&quot;},&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Port theme&quot;,&quot;artist&quot;:&quot;Composer&quot;,&quot;album&quot;:&quot;OST&quot;,&quot;explicit&quot;:true,&quot;cover&quot;:&quot;http://example.com/images/thumb/3/3a/Foobar.jpg/240px-Foobar.jpg&quot;,&quot;lyrics&quot;:&quot;https://example.com/port.lrc&quot;,&quot;lyricsOffset&quot;:251,&quot;link&quot;:&quot;/wiki/Main_Page#Music&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Port theme</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: external audio with external cover and link, missing lyrics file
+!! options
+cat
+extlinks
+showmedia
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","coverImageUrl":"https://example.com/c.jpg","navigationUrl":"https://example.com/page","lrcFileUrl":"Missing.lrc","lrcFileOffset":-500}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+extlink=https://example.com/a.mp3
+extlink=https://example.com/page
+extlink=https://example.com/c.jpg
+images=Missing.lrc
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;cover&quot;:&quot;https://example.com/c.jpg&quot;,&quot;lyricsOffset&quot;:-500,&quot;link&quot;:&quot;https://example.com/page&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">a.mp3</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: wrong-typed optional fields fall back to defaults
+!! wikitext
+<modernsoundmanager>{"loop":"yes","autoPlay":1,"isPlaylistOpen":null,"backgroundColor":123,"trackColor":"#zzz","playlist":[{"audioFileUrl":"Audio.oga","title":5,"artist":["a"],"isExplicit":"true","lrcFileOffset":"100","navigationUrl":false,"coverImageUrl":{}}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: javascript and data URLs are dropped without file lookups
+!! options
+cat
+extlinks
+links
+showmedia
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","coverImageUrl":"javascript:alert(1)","lrcFileUrl":"data:text/plain,hi","navigationUrl":"javascript:alert(1)"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+extlink=https://example.com/a.mp3
+images=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">a.mp3</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: a missing audio file links to the upload form even with navigationUrl
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Missing.mp3","navigationUrl":"Main Page"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Missing.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Missing.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Missing.mp3">Missing.mp3</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: a navigationUrl that is not a valid title falls back to the file page
+!! options
+links
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Audio.oga","navigationUrl":"[[Bad|title]]"}]}</modernsoundmanager>
+!! metadata
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: empty body renders nothing
+!! wikitext
+<modernsoundmanager></modernsoundmanager><modernsoundmanager/><modernsoundmanager>
+</modernsoundmanager>
+!! html/php
+!! end
+
+!! test
+modernsoundmanager: invalid JSON
+!! options
+cat
+!! wikitext
+<modernsoundmanager>{oops}</modernsoundmanager>
+<modernsoundmanager>["not", "an", "object"]</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+!! html/php
+<p><strong class="error ext-gramophone-error">Audio player error: The playlist is not a valid JSON object.</strong>
+<strong class="error ext-gramophone-error">Audio player error: The playlist is not a valid JSON object.</strong>
+</p>
+!! end
+
+!! test
+modernsoundmanager: missing or empty playlist
+!! wikitext
+<modernsoundmanager>{}</modernsoundmanager>
+<modernsoundmanager>{"playlist":[]}</modernsoundmanager>
+<modernsoundmanager>{"playlist":{"audioFileUrl":"Audio.oga"}}</modernsoundmanager>
+!! html/php
+<p><strong class="error ext-gramophone-error">Audio player error: No playlist was given. Add a "playlist" list with at least one entry that has an "audioFileUrl".</strong>
+<strong class="error ext-gramophone-error">Audio player error: No playlist was given. Add a "playlist" list with at least one entry that has an "audioFileUrl".</strong>
+<strong class="error ext-gramophone-error">Audio player error: No playlist was given. Add a "playlist" list with at least one entry that has an "audioFileUrl".</strong>
+</p>
+!! end
+
+!! test
+modernsoundmanager: entries that are null, not objects or without a usable audioFileUrl are skipped
+!! wikitext
+<modernsoundmanager>{"playlist":[null,"Audio.oga",{"title":"No file"},{"audioFileUrl":null},{"audioFileUrl":""},{"audioFileUrl":"  "},{"audioFileUrl":0},{"audioFileUrl":false},{"audioFileUrl":["Audio.oga"]},{"audioFileUrl":{}},{"audioFileUrl":"Audio.oga","title":"Kept"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Kept&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Kept</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: a playlist with only skipped entries is an error
+!! wikitext
+<modernsoundmanager>{"playlist":[null,"Audio.oga",{"title":"No file"}]}</modernsoundmanager>
+<modernsoundmanager>{"playlist":[{"audioFileUrl":""},{"audioFileUrl":42},{"audioFileUrl":false}]}</modernsoundmanager>
+!! html/php
+<p><strong class="error ext-gramophone-error">Audio player error: No playlist was given. Add a "playlist" list with at least one entry that has an "audioFileUrl".</strong>
+<strong class="error ext-gramophone-error">Audio player error: No playlist was given. Add a "playlist" list with at least one entry that has an "audioFileUrl".</strong>
+</p>
+!! end
+
+!! test
+modernsoundmanager: error message in the page language
+!! options
+language=zh
+!! wikitext
+<modernsoundmanager>{oops}</modernsoundmanager>
+!! html/php
+<p><strong class="error ext-gramophone-error">音频播放器出错：播放列表不是有效的 JSON 对象。</strong>
+</p>
+!! end
+
+!! test
+flashmp3: a file redirect resolves to its target
+!! options
+showmedia
+!! wikitext
+<flashmp3>Redirect to audio.oga</flashmp3>
+!! metadata
+images=Redirect_to_audio.oga, Audio.oga
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: other namespaces, other URL schemes and backslash paths are not playable
+!! options
+cat
+showmedia
+!! wikitext
+<flashmp3>Help:Audio.oga,mailto:a@example.com,ftp://example.com/a.mp3,/\evil.example/a.mp3</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+images=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Help:Audio.oga&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;mailto:a@example.com&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;ftp://example.com/a.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/\\evil.example/a.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">Help:Audio.oga</span></li><li><span class="new ext-gramophone-fallback-link">mailto:a@example.com</span></li><li><span class="new ext-gramophone-fallback-link">ftp://example.com/a.mp3</span></li><li><span class="new ext-gramophone-fallback-link">/\evil.example/a.mp3</span></li></ol></div>
+!! end
+
+!! test
+flashmp3: an interwiki-like prefix stays part of the file name
+!! options
+showmedia
+!! wikitext
+<flashmp3>wikipedia:Audio.oga</flashmp3>
+!! metadata
+images=Wikipedia:Audio.oga
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Wikipedia:Audio.oga&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Wikipedia:Audio.oga&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Wikipedia:Audio.oga">Wikipedia:Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: missing file with $wgUploadMissingFileUrl
+!! config
+wgUploadMissingFileUrl="https://upload.example/new"
+!! wikitext
+<flashmp3>Port-day.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Port-day.mp3&quot;,&quot;link&quot;:&quot;https://upload.example/new?wpDestFile=Port-day.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="new ext-gramophone-fallback-link" href="https://upload.example/new?wpDestFile=Port-day.mp3">Port-day.mp3</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: line breaks never leave the single output line
+!! wikitext
+<flashmp3>Bad[name.mp3
+* not a list</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Bad[name.mp3 * not a list&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">Bad[name.mp3 * not a list</span></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: control characters in text become spaces, text shaped like a strip marker is removed
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","title":"Line one\nLine two\u007f'\"`UNIQ--nowiki-00000000-QINU`\"'\u007f","artist":"\tA\u0000B"},{"audioFileUrl":"x\u007fy.mp3"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;Line one Line two&quot;,&quot;artist&quot;:&quot;A B&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;x y.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">Line one Line two</a></li><li><span class="new ext-gramophone-fallback-link">x y.mp3</span></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: covers and lyrics from wiki files
+!! options
+cat
+showmedia
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Audio.oga","coverImageUrl":"Audio.oga","lrcFileUrl":"File:Audio.oga"},{"audioFileUrl":"Audio.oga","coverImageUrl":"Missing cover.jpg"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+images=Audio.oga, Missing_cover.jpg
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;cover&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;lyrics&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+flashmp3: protocol-relative and same-site URLs play as URLs
+!! options
+cat
+extlinks
+showmedia
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>//audio.example.com/voice/greeting.mp3,/images/a/ab/Local file.mp3</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+extlink=//audio.example.com/voice/greeting.mp3
+images=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;//audio.example.com/voice/greeting.mp3&quot;,&quot;title&quot;:&quot;greeting.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;/images/a/ab/Local%20file.mp3&quot;,&quot;title&quot;:&quot;Local file.mp3&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="//audio.example.com/voice/greeting.mp3" rel="nofollow">greeting.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/images/a/ab/Local%20file.mp3">Local file.mp3</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: protocol-relative and same-site URLs for audio, cover, lyrics and link
+!! options
+cat
+extlinks
+links
+showmedia
+!! config
+wgUploadPath="/images"
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"//cdn.example/a.mp3","coverImageUrl":"//cdn.example/c.jpg","lrcFileUrl":"/images/a.lrc","navigationUrl":"//evil.example/phish"},{"audioFileUrl":"/images/b.mp3","navigationUrl":"/wiki/Main_Page"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+extlink=//cdn.example/a.mp3
+extlink=//evil.example/phish
+extlink=//cdn.example/c.jpg
+images=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;//cdn.example/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;cover&quot;:&quot;//cdn.example/c.jpg&quot;,&quot;lyrics&quot;:&quot;/images/a.lrc&quot;,&quot;link&quot;:&quot;//evil.example/phish&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;/images/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;link&quot;:&quot;/wiki/Main_Page&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="//cdn.example/a.mp3" rel="nofollow">a.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/images/b.mp3">b.mp3</a></li></ol></div>
+!! end
+
+!! test
+modernsoundmanager: $wgGramophoneAllowedHosts rejects audio, cover and lyrics on other hosts, but not links
+!! options
+cat
+extlinks
+!! config
+wgUploadPath="/images"
+wgGramophoneAllowedHosts=["example.com"]
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://cdn.example.com/a.mp3","coverImageUrl":"https://other.example/c.jpg","navigationUrl":"https://other.example/page"},{"audioFileUrl":"//other.example/b.mp3","lrcFileUrl":"/images/b.lrc"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+extlink=https://cdn.example.com/a.mp3
+extlink=https://other.example/page
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://cdn.example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;link&quot;:&quot;https://other.example/page&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;//other.example/b.mp3&quot;,&quot;lyrics&quot;:&quot;/images/b.lrc&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://cdn.example.com/a.mp3" rel="nofollow">a.mp3</a></li><li><span class="new ext-gramophone-fallback-link">//other.example/b.mp3</span></li></ol></div>
+!! end
+
+!! test
+flashmp3: unbalanced quotes split on every comma
+!! wikitext
+<flashmp3>"Audio.oga,https://example.com/b.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;\&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=%22Audio.oga&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;https://example.com/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=%22Audio.oga">"Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/b.mp3" rel="nofollow">b.mp3</a></li></ol></div>
+!! end
+
+!! test
+sm2: variant conversion converts the tooltip and the JSON title
+!! options
+language=zh htmlVariantLanguage=zh-tw
+!! wikitext
+<sm2>https://example.com/港区.mp3</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/%E6%B8%AF%E5%8C%BA.mp3&quot;,&quot;title&quot;:&quot;港區.mp3&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/%E6%B8%AF%E5%8C%BA.mp3" title="港區.mp3" rel="nofollow">港區.mp3</a></span>
+</p>
+!! end
+
+!! test
+Variant conversion: title, artist and album in the JSON match the converted fallback text
+!! options
+language=zh htmlVariantLanguage=zh-tw
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","title":"港区","artist":"舰队","album":"简体"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;港區&quot;,&quot;artist&quot;:&quot;艦隊&quot;,&quot;album&quot;:&quot;簡體&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">港區</a></li></ol></div>
+!! end
+
+!! test
+Variant conversion: conversion markup is applied to the JSON text
+!! options
+language=zh htmlVariantLanguage=zh-tw
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","title":"-{港区}- 港区","artist":"-{zh-hans:简体;zh-hant:繁體;}-","album":"舰队 <b>&amp;"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;港区 港區&quot;,&quot;artist&quot;:&quot;繁體&quot;,&quot;album&quot;:&quot;艦隊 \u003Cb\u003E\u0026amp;&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">港区 港區</a></li></ol></div>
+!! end
+
+!! test
+Variant conversion: no conversion without a variant
+!! options
+language=zh
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","title":"港区","artist":"舰队"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;港区&quot;,&quot;artist&quot;:&quot;舰队&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">港区</a></li></ol></div>
+!! end
+
+###
+### What loads without a click, same-site paths, nofollow, strip markers and the track budget
+###
+
+!! test
+Without $wgAllowExternalImages, an external cover is dropped and a player with external audio does not start on its own
+!! options
+cat
+extlinks
+!! config
+wgAllowExternalImages=false
+wgUploadPath="/images"
+!! wikitext
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"https://example.com/a.mp3","coverImageUrl":"https://example.com/c.jpg"},{"audioFileUrl":"Audio.oga","coverImageUrl":"Foobar.jpg"}]}</modernsoundmanager>
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"Audio.oga"},{"audioFileUrl":"/images/a/ab/Local.mp3"},{"audioFileUrl":"/wiki/Main_Page"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+extlink=https://example.com/a.mp3
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;cover&quot;:&quot;http://example.com/images/thumb/3/3a/Foobar.jpg/240px-Foobar.jpg&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">a.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;/images/a/ab/Local.mp3&quot;,&quot;title&quot;:&quot;Local.mp3&quot;},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/wiki/Main_Page&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="/images/a/ab/Local.mp3">Local.mp3</a></li><li><span class="new ext-gramophone-fallback-link">/wiki/Main_Page</span></li></ol></div>
+!! end
+
+!! test
+Without $wgAllowExternalImages, hidemissing checks only paths on this site
+!! config
+wgAllowExternalImages=false
+wgUploadPath="/images"
+!! wikitext
+<sm2>https://example.com/a.mp3,/images/a/ab/Local.mp3,Audio.oga,Missing.mp3,/wiki/Main_Page|hidemissing=yes</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;/images/a/ab/Local.mp3&quot;,&quot;title&quot;:&quot;Local.mp3&quot;,&quot;verify&quot;:true},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Missing.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Missing.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/wiki/Main_Page&quot;,&quot;missing&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" title="a.mp3" rel="nofollow">a.mp3</a><a class="ext-gramophone-fallback-link" href="/images/a/ab/Local.mp3" title="Local.mp3">Local.mp3</a><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Missing.mp3" title="Missing.mp3">Missing.mp3</a><span class="new ext-gramophone-fallback-link" title="/wiki/Main_Page">/wiki/Main_Page</span></span>
+</p>
+!! end
+
+!! test
+Without $wgAllowExternalImages, a cover given as a full URL to this wiki's upload path counts as another site and is dropped, its path is kept
+!! options
+cat
+extlinks
+!! config
+wgAllowExternalImages=false
+wgUploadPath="/images"
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Audio.oga","coverImageUrl":"http://example.org/images/a/ab/Cover.jpg"},{"audioFileUrl":"Audio.oga","coverImageUrl":"/images/a/ab/Cover.jpg"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;cover&quot;:&quot;/images/a/ab/Cover.jpg&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+$wgAllowExternalImagesFrom prefixes allow covers, hidemissing checks and autoplay, and protocol-relative URLs match in either protocol
+!! options
+cat
+!! config
+wgAllowExternalImages=false
+wgAllowExternalImagesFrom=["https://img.example/","http://cdn.example/"]
+!! wikitext
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"https://img.example/a.mp3","coverImageUrl":"//img.example/c.jpg"},{"audioFileUrl":"//cdn.example/b.mp3","coverImageUrl":"https://cdn.example/c.jpg"}]}</modernsoundmanager>
+<sm2>//img.example/a.mp3,https://other.example/b.mp3,https://img.example.other/c.mp3|hidemissing=yes</sm2>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://img.example/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;cover&quot;:&quot;//img.example/c.jpg&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;//cdn.example/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://img.example/a.mp3" rel="nofollow">a.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="//cdn.example/b.mp3" rel="nofollow">b.mp3</a></li></ol></div>
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;//img.example/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://other.example/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://img.example.other/c.mp3&quot;,&quot;title&quot;:&quot;c.mp3&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="//img.example/a.mp3" title="a.mp3" rel="nofollow">a.mp3</a><a class="ext-gramophone-fallback-link" href="https://other.example/b.mp3" title="b.mp3" rel="nofollow">b.mp3</a><a class="ext-gramophone-fallback-link" href="https://img.example.other/c.mp3" title="c.mp3" rel="nofollow">c.mp3</a></span>
+</p>
+!! end
+
+!! test
+$wgAllowExternalImagesFrom as a single prefix
+!! config
+wgAllowExternalImages=false
+wgAllowExternalImagesFrom="https://img.example/"
+!! wikitext
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"https://img.example/a.mp3","coverImageUrl":"https://img.example/c.jpg"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://img.example/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;cover&quot;:&quot;https://img.example/c.jpg&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://img.example/a.mp3" rel="nofollow">a.mp3</a></li></ol></div>
+!! end
+
+!! test
+$wgGramophoneAllowedHosts: a listed host may load without a click, even without $wgAllowExternalImages
+!! config
+wgAllowExternalImages=false
+wgGramophoneAllowedHosts=["example.com"]
+!! wikitext
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"https://cdn.example.com/a.mp3","coverImageUrl":"https://example.com/c.jpg"}]}</modernsoundmanager>
+<sm2>https://example.com/a.mp3|hidemissing=yes</sm2>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://cdn.example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;cover&quot;:&quot;https://example.com/c.jpg&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://cdn.example.com/a.mp3" rel="nofollow">a.mp3</a></li></ol></div>
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" title="a.mp3" rel="nofollow">a.mp3</a></span>
+</p>
+!! end
+
+!! test
+Same-site paths play only when they point at a file the wiki serves
+!! options
+cat
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>/images/a/ab/A.mp3,/img_auth.php/a/ab/B.mp3,/wiki/Special:FilePath/C.mp3,/wiki/Special:filepath/C.mp3,/index.php?title=Special:Redirect/file/D.mp3,/wiki/Special:Redirect/file/D.mp3?width=100,/index.php?title=Special:FilePath&file=E.mp3</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;},{&quot;src&quot;:&quot;/img_auth.php/a/ab/B.mp3&quot;,&quot;title&quot;:&quot;B.mp3&quot;},{&quot;src&quot;:&quot;/wiki/Special:FilePath/C.mp3&quot;,&quot;title&quot;:&quot;C.mp3&quot;},{&quot;src&quot;:&quot;/wiki/Special:filepath/C.mp3&quot;,&quot;title&quot;:&quot;C.mp3&quot;},{&quot;src&quot;:&quot;/index.php?title=Special:Redirect/file/D.mp3&quot;,&quot;title&quot;:&quot;index.php&quot;},{&quot;src&quot;:&quot;/wiki/Special:Redirect/file/D.mp3?width=100&quot;,&quot;title&quot;:&quot;D.mp3&quot;},{&quot;src&quot;:&quot;/index.php?title=Special:FilePath\u0026file=E.mp3&quot;,&quot;title&quot;:&quot;index.php&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="/images/a/ab/A.mp3">A.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/img_auth.php/a/ab/B.mp3">B.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/wiki/Special:FilePath/C.mp3">C.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/wiki/Special:filepath/C.mp3">C.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/index.php?title=Special:Redirect/file/D.mp3">index.php</a></li><li><a class="ext-gramophone-fallback-link" href="/wiki/Special:Redirect/file/D.mp3?width=100">D.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/index.php?title=Special:FilePath&amp;file=E.mp3">index.php</a></li></ol></div>
+!! end
+
+!! test
+Same-site paths that are not files the wiki serves are refused for audio, covers and lyrics, but not for links
+!! options
+cat
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>/index.php?title=Special:Upload,/wiki/Main_Page,/images/../index.php,/images/%2E%2e/api.php,/images/./../api.php,/img_auth.phpx/a.mp3,/imagesx/a.mp3,/wiki/Special:Redirect/user/1,/wiki/Special:Redirect/File/a.mp3,/api.php?action=query</flashmp3>
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Audio.oga","coverImageUrl":"/wiki/Main_Page","lrcFileUrl":"/index.php?title=Main_Page&action=raw","navigationUrl":"/wiki/Main_Page"},{"audioFileUrl":"Audio.oga","coverImageUrl":"/images/c.jpg","lrcFileUrl":"/images/a.lrc"}]}</modernsoundmanager>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/index.php?title=Special:Upload&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/wiki/Main_Page&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/../index.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/%2E%2e/api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/./../api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/img_auth.phpx/a.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/imagesx/a.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/wiki/Special:Redirect/user/1&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/wiki/Special:Redirect/File/a.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/api.php?action=query&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">/index.php?title=Special:Upload</span></li><li><span class="new ext-gramophone-fallback-link">/wiki/Main_Page</span></li><li><span class="new ext-gramophone-fallback-link">/images/../index.php</span></li><li><span class="new ext-gramophone-fallback-link">/images/%2E%2e/api.php</span></li><li><span class="new ext-gramophone-fallback-link">/images/./../api.php</span></li><li><span class="new ext-gramophone-fallback-link">/img_auth.phpx/a.mp3</span></li><li><span class="new ext-gramophone-fallback-link">/imagesx/a.mp3</span></li><li><span class="new ext-gramophone-fallback-link">/wiki/Special:Redirect/user/1</span></li><li><span class="new ext-gramophone-fallback-link">/wiki/Special:Redirect/File/a.mp3</span></li><li><span class="new ext-gramophone-fallback-link">/api.php?action=query</span></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/Main_Page&quot;},{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;cover&quot;:&quot;/images/c.jpg&quot;,&quot;lyrics&quot;:&quot;/images/a.lrc&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li></ol></div>
+!! end
+
+!! test
+Same-site paths: encoded slashes and dot segments, curid, and full URLs to this wiki's host follow the same rules
+!! options
+cat
+extlinks
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>/images/..%2Fapi.php,/images/a%2F..%2F..%2Fapi.php,/img_auth.php/%2e%2e%2Fapi.php,/images/a%5C..%5Capi.php,/images/a%00.mp3,/wiki/Special:FilePath/A.mp3?curid=1,http://example.org/api.php?action=query,//EXAMPLE.org:8080/index.php?title=Main_Page&action=raw,http://example.org/images/a/ab/A.mp3,https://example.org/wiki/Special:FilePath/B.mp3</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+extlink=https://example.org/wiki/Special:FilePath/B.mp3
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/..%2Fapi.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/a%2F..%2F..%2Fapi.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/img_auth.php/%2e%2e%2Fapi.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/a%5C..%5Capi.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/a%00.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/wiki/Special:FilePath/A.mp3?curid=1&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://example.org/api.php?action=query&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;//EXAMPLE.org:8080/index.php?title=Main_Page\u0026action=raw&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;http://example.org/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://example.org/wiki/Special:FilePath/B.mp3&quot;,&quot;title&quot;:&quot;B.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">/images/..%2Fapi.php</span></li><li><span class="new ext-gramophone-fallback-link">/images/a%2F..%2F..%2Fapi.php</span></li><li><span class="new ext-gramophone-fallback-link">/img_auth.php/%2e%2e%2Fapi.php</span></li><li><span class="new ext-gramophone-fallback-link">/images/a%5C..%5Capi.php</span></li><li><span class="new ext-gramophone-fallback-link">/images/a%00.mp3</span></li><li><span class="new ext-gramophone-fallback-link">/wiki/Special:FilePath/A.mp3?curid=1</span></li><li><span class="new ext-gramophone-fallback-link">http://example.org/api.php?action=query</span></li><li><span class="new ext-gramophone-fallback-link">//EXAMPLE.org:8080/index.php?title=Main_Page&amp;action=raw</span></li><li><a class="ext-gramophone-fallback-link" href="http://example.org/images/a/ab/A.mp3" rel="nofollow">A.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.org/wiki/Special:FilePath/B.mp3" rel="nofollow">B.mp3</a></li></ol></div>
+!! end
+
+!! test
+Same-site paths: the $wgScript?title= form with the article path at the root
+!! config
+wgArticlePath="/$1"
+!! wikitext
+<flashmp3>/index.php?title=Special:FilePath/A.mp3,/Special:FilePath/B.mp3,/index.php</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;/index.php?title=Special:FilePath/A.mp3&quot;,&quot;title&quot;:&quot;index.php&quot;},{&quot;src&quot;:&quot;/Special:FilePath/B.mp3&quot;,&quot;title&quot;:&quot;B.mp3&quot;},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/index.php&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="/index.php?title=Special:FilePath/A.mp3">index.php</a></li><li><a class="ext-gramophone-fallback-link" href="/Special:FilePath/B.mp3">B.mp3</a></li><li><span class="new ext-gramophone-fallback-link">/index.php</span></li></ol></div>
+!! end
+
+!! test
+Same-site paths: $wgUploadPath as a URL on this wiki's host counts, other paths do not
+!! config
+wgUploadPath="http://example.org/media"
+!! wikitext
+<flashmp3>/media/a/ab/A.mp3,/images/a/ab/B.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;/media/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/a/ab/B.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="/media/a/ab/A.mp3">A.mp3</a></li><li><span class="new ext-gramophone-fallback-link">/images/a/ab/B.mp3</span></li></ol></div>
+!! end
+
+!! test
+Same-site paths: $wgUploadPath on another host
+!! config
+wgUploadPath="//uploads.example.org/images"
+!! wikitext
+<flashmp3>/images/a/ab/A.mp3,/wiki/Special:FilePath/A.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/a/ab/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;/wiki/Special:FilePath/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">/images/a/ab/A.mp3</span></li><li><a class="ext-gramophone-fallback-link" href="/wiki/Special:FilePath/A.mp3">A.mp3</a></li></ol></div>
+!! end
+
+!! test
+Same-site paths: localised special page names
+!! options
+language=zh
+!! wikitext
+<flashmp3>/wiki/特殊:文件路径/A.mp3,/index.php?title=Special:重定向/file/B.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;/wiki/%E7%89%B9%E6%AE%8A:%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;},{&quot;src&quot;:&quot;/index.php?title=Special:%E9%87%8D%E5%AE%9A%E5%90%91/file/B.mp3&quot;,&quot;title&quot;:&quot;index.php&quot;}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="/wiki/%E7%89%B9%E6%AE%8A:%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/A.mp3">A.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/index.php?title=Special:%E9%87%8D%E5%AE%9A%E5%90%91/file/B.mp3">index.php</a></li></ol></div>
+!! end
+
+!! test
+nofollow: an external link of a track marks it, links on this site and $wgNoFollowDomainExceptions do not
+!! config
+wgUploadPath="/images"
+!! wikitext
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Audio.oga","navigationUrl":"https://example.com/page"},{"audioFileUrl":"https://no-nofollow.org/a.mp3","navigationUrl":"https://no-nofollow.org/page"},{"audioFileUrl":"/images/a.mp3","navigationUrl":"/wiki/Main_Page"},{"audioFileUrl":"Missing.mp3","navigationUrl":"https://example.com/page"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;https://example.com/page&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://no-nofollow.org/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;link&quot;:&quot;https://no-nofollow.org/page&quot;},{&quot;src&quot;:&quot;/images/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;link&quot;:&quot;/wiki/Main_Page&quot;},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;Missing.mp3&quot;,&quot;link&quot;:&quot;/index.php?title=Special:Upload\u0026wpDestFile=Missing.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga">Audio.oga</a></li><li><a class="ext-gramophone-fallback-link" href="https://no-nofollow.org/a.mp3">a.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/images/a.mp3">a.mp3</a></li><li><a class="new ext-gramophone-fallback-link" href="/index.php?title=Special:Upload&amp;wpDestFile=Missing.mp3">Missing.mp3</a></li></ol></div>
+!! end
+
+!! test
+Strip markers: nowiki in tag content and options is kept as its text, other markers are removed
+!! config
+wgGramophoneAudioButtonTag=true
+!! wikitext
+{{#tag:sm2|https://example.com/a.mp3<nowiki/>|title=Hello<nowiki>!</nowiki>}} <ab>Audio.oga<nowiki/></ab>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;Hello!&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" title="Hello!" rel="nofollow">Hello!</a></span> <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end
+
+!! test
+Host spellings: a URL to this wiki's host follows the same-site rules however the host is spelled
+!! options
+cat
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>http://ex%61mple.org/api.php?action=query,http://ｅｘａｍｐｌｅ.org/api.php,http://exam%C2%ADple.org/api.php,http://example.org./api.php,http://EXAMPLE.ORG/api.php,http://ex%61mple.org/images/a/ab/A.mp3</flashmp3>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://ex%61mple.org/api.php?action=query&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://ｅｘａｍｐｌｅ.org/api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://exam%C2%ADple.org/api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://example.org./api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://EXAMPLE.ORG/api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;http://example.org/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">http://ex%61mple.org/api.php?action=query</span></li><li><span class="new ext-gramophone-fallback-link">http://ｅｘａｍｐｌｅ.org/api.php</span></li><li><span class="new ext-gramophone-fallback-link">http://exam%C2%ADple.org/api.php</span></li><li><span class="new ext-gramophone-fallback-link">http://example.org./api.php</span></li><li><span class="new ext-gramophone-fallback-link">http://EXAMPLE.ORG/api.php</span></li><li><a class="ext-gramophone-fallback-link" href="http://example.org/images/a/ab/A.mp3" rel="nofollow">A.mp3</a></li></ol></div>
+!! end
+
+!! test
+Host spellings: numeric IPv4 forms other than four decimals are refused, IPv6 hosts compare in their short form
+!! config
+wgServer="http://127.0.0.1"
+wgCanonicalServer="http://127.0.0.1"
+wgUploadPath="/images"
+wgGramophoneAllowedHosts=["127.0.0.1","[::1]"]
+!! wikitext
+<flashmp3>http://2130706433/images/a/ab/A.mp3,http://127.1/images/a/ab/A.mp3,http://0x7f.0.0.1/images/a/ab/A.mp3,http://0177.0.0.1/images/a/ab/A.mp3,http://1.2.3.4.5/a.mp3,http://127.0.0.1/api.php,http://127.0.0.1/images/a/ab/A.mp3,http://[0:0:0:0:0:0:0:1]/a.mp3,http://[::2]/a.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://2130706433/images/a/ab/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://127.1/images/a/ab/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://0x7f.0.0.1/images/a/ab/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://0177.0.0.1/images/a/ab/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://1.2.3.4.5/a.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://127.0.0.1/api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;http://127.0.0.1/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;http://[0:0:0:0:0:0:0:1]/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://[::2]/a.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">http://2130706433/images/a/ab/A.mp3</span></li><li><span class="new ext-gramophone-fallback-link">http://127.1/images/a/ab/A.mp3</span></li><li><span class="new ext-gramophone-fallback-link">http://0x7f.0.0.1/images/a/ab/A.mp3</span></li><li><span class="new ext-gramophone-fallback-link">http://0177.0.0.1/images/a/ab/A.mp3</span></li><li><span class="new ext-gramophone-fallback-link">http://1.2.3.4.5/a.mp3</span></li><li><span class="new ext-gramophone-fallback-link">http://127.0.0.1/api.php</span></li><li><a class="ext-gramophone-fallback-link" href="http://127.0.0.1/images/a/ab/A.mp3" rel="nofollow">A.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="http://[0:0:0:0:0:0:0:1]/a.mp3" rel="nofollow">a.mp3</a></li><li><span class="new ext-gramophone-fallback-link">http://[::2]/a.mp3</span></li></ol></div>
+!! end
+
+!! test
+Host spellings: with $wgGramophoneAllowedHosts naming the wiki's parent domain, covers, hidemissing checks and autoplay use the host a browser contacts
+!! options
+cat
+!! config
+wgServer="http://wiki.example.org"
+wgCanonicalServer="http://wiki.example.org"
+wgUploadPath="/images"
+wgAllowExternalImages=false
+wgGramophoneAllowedHosts=["example.org"]
+!! wikitext
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"http://wik%69.example.org/api.php?action=query","coverImageUrl":"http://WIKI.example.org/index.php?title=Special:Random"},{"audioFileUrl":"https://cdn.example.org/b.mp3","coverImageUrl":"https://cdn.ex%61mple.org/c.jpg"}]}</modernsoundmanager>
+<sm2>http://wik%69.example.org/index.php?title=Special:Random,https://CDN.example.org./a.mp3,http://wiki.example.org/images/a/ab/A.mp3|hidemissing=yes</sm2>
+!! metadata
+cat=Pages_with_audio_players sort=
+cat=Pages_with_missing_audio_player_files sort=
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://wik%69.example.org/api.php?action=query&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;https://cdn.example.org/b.mp3&quot;,&quot;title&quot;:&quot;b.mp3&quot;,&quot;cover&quot;:&quot;https://cdn.example.org/c.jpg&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">http://wik%69.example.org/api.php?action=query</span></li><li><a class="ext-gramophone-fallback-link" href="https://cdn.example.org/b.mp3" rel="nofollow">b.mp3</a></li></ol></div>
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;hideMissing&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://wik%69.example.org/index.php?title=Special:Random&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;https://CDN.example.org./a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;http://wiki.example.org/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;,&quot;verify&quot;:true,&quot;nofollow&quot;:true}]}"><span class="new ext-gramophone-fallback-link" title="http://wik%69.example.org/index.php?title=Special:Random">http://wik%69.example.org/index.php?title=Special:Random</span><a class="ext-gramophone-fallback-link" href="https://CDN.example.org./a.mp3" title="a.mp3" rel="nofollow">a.mp3</a><a class="ext-gramophone-fallback-link" href="http://wiki.example.org/images/a/ab/A.mp3" title="A.mp3" rel="nofollow">A.mp3</a></span>
+</p>
+!! end
+
+!! test
+A full URL to the wiki's own host also needs $wgGramophoneAllowedHosts to list that host
+!! config
+wgUploadPath="/images"
+wgGramophoneAllowedHosts=["cdn.example"]
+!! wikitext
+<flashmp3>http://example.org/images/a/ab/A.mp3,/images/a/ab/B.mp3,https://cdn.example/c.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://example.org/images/a/ab/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;/images/a/ab/B.mp3&quot;,&quot;title&quot;:&quot;B.mp3&quot;},{&quot;src&quot;:&quot;https://cdn.example/c.mp3&quot;,&quot;title&quot;:&quot;c.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">http://example.org/images/a/ab/A.mp3</span></li><li><a class="ext-gramophone-fallback-link" href="/images/a/ab/B.mp3">B.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="https://cdn.example/c.mp3" rel="nofollow">c.mp3</a></li></ol></div>
+!! end
+
+!! test
+Hosts within $wgCookieDomain get the wiki's cookies, so they follow the same-site rules
+!! config
+wgUploadPath="/images"
+wgCookieDomain=".example.org"
+!! wikitext
+<flashmp3>http://m.example.org/api.php?action=query,http://m.example.org/images/a/ab/A.mp3,http://example.org.other.test/api.php,http://notexample.org/api.php</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;http://m.example.org/api.php?action=query&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;http://m.example.org/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;http://example.org.other.test/api.php&quot;,&quot;title&quot;:&quot;api.php&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;http://notexample.org/api.php&quot;,&quot;title&quot;:&quot;api.php&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">http://m.example.org/api.php?action=query</span></li><li><a class="ext-gramophone-fallback-link" href="http://m.example.org/images/a/ab/A.mp3" rel="nofollow">A.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="http://example.org.other.test/api.php" rel="nofollow">api.php</a></li><li><a class="ext-gramophone-fallback-link" href="http://notexample.org/api.php" rel="nofollow">api.php</a></li></ol></div>
+!! end
+
+!! test
+Same-site paths: entities in title= stay text, as core reads request titles
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>/index.php?title=Special%26%2358;FilePath/A.mp3,/index.php?title=Special:File%26%23x200E;Path/A.mp3,/index.php?title=Special:FilePath/A.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/index.php?title=Special%26%2358;FilePath/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/index.php?title=Special:File%26%23x200E;Path/A.mp3&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;/index.php?title=Special:FilePath/A.mp3&quot;,&quot;title&quot;:&quot;index.php&quot;}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">/index.php?title=Special%26%2358;FilePath/A.mp3</span></li><li><span class="new ext-gramophone-fallback-link">/index.php?title=Special:File%26%23x200E;Path/A.mp3</span></li><li><a class="ext-gramophone-fallback-link" href="/index.php?title=Special:FilePath/A.mp3">index.php</a></li></ol></div>
+!! end
+
+!! test
+Same-site paths: %25 is refused, because some servers decode a path twice
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>/images/%252e%252e/api.php,/images/a/ab/100%25.mp3</flashmp3>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/%252e%252e/api.php&quot;,&quot;missing&quot;:true},{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/images/a/ab/100%25.mp3&quot;,&quot;missing&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><span class="new ext-gramophone-fallback-link">/images/%252e%252e/api.php</span></li><li><span class="new ext-gramophone-fallback-link">/images/a/ab/100%25.mp3</span></li></ol></div>
+!! end
+
+!! test
+Same-site paths: a query with more parameters than PHP reads is refused
+!! config
+wgUploadPath="/images"
+!! wikitext
+<sm2>/index.php?title=Special:FilePath/A.mp3&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1&a=1</sm2>
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;&quot;,&quot;title&quot;:&quot;/index.php?title=Special:FilePath/A.mp3\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1\u0026a=1&quot;,&quot;missing&quot;:true}]}"><span class="new ext-gramophone-fallback-link" title="/index.php?title=Special:FilePath/A.mp3&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1">/index.php?title=Special:FilePath/A.mp3&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1&amp;a=1</span></span>
+</p>
+!! end
+
+!! test
+$wgAllowExternalImagesFrom: an empty prefix allows nothing, unlike in core
+!! config
+wgAllowExternalImages=false
+wgAllowExternalImagesFrom=[""]
+!! wikitext
+<modernsoundmanager>{"autoPlay":true,"playlist":[{"audioFileUrl":"https://example.com/a.mp3","coverImageUrl":"https://example.com/c.jpg"}]}</modernsoundmanager>
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;a.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">a.mp3</a></li></ol></div>
+!! end
+
+!! test
+Strip markers: nowiki keeps a separator in #tag content as text, in legacy lists, options and JSON values
+!! wikitext
+{{#tag:sm2|https://example.com/a<nowiki>|</nowiki>b.mp3,https://example.com/c<nowiki>,</nowiki>d.mp3|title=<nowiki>[[Not a link]] & more</nowiki>}}
+{{#tag:modernsoundmanager|{"playlist":[{"audioFileUrl":"https://example.com/a.mp3","title":"<nowiki>"Quoted" | 1, 2</nowiki>"}] } }}
+{{#tag:modernsoundmanager|<nowiki>{"playlist":[{"audioFileUrl":"https://example.com/b.mp3","title":"A | B {{x}}"}]}</nowiki>}}
+!! html/php
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a%7Cb.mp3&quot;,&quot;title&quot;:&quot;[[Not a link]] \u0026 more&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://example.com/c,d.mp3&quot;,&quot;title&quot;:&quot;[[Not a link]] \u0026 more&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="https://example.com/a%7Cb.mp3" title="[[Not a link]] &amp; more" rel="nofollow">[[Not a link]] &amp; more</a><a class="ext-gramophone-fallback-link" href="https://example.com/c,d.mp3" title="[[Not a link]] &amp; more" rel="nofollow">[[Not a link]] &amp; more</a></span>
+</p>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/a.mp3&quot;,&quot;title&quot;:&quot;\&quot;Quoted\&quot; | 1, 2&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/a.mp3" rel="nofollow">"Quoted" | 1, 2</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;https://example.com/b.mp3&quot;,&quot;title&quot;:&quot;A | B {{x}}&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="https://example.com/b.mp3" rel="nofollow">A | B {{x}}</a></li></ol></div>
+!! end
+
+!! test
+Editor URLs take the form core registers external links in: needless escapes decoded, reserved characters kept encoded, dot segments resolved
+!! options
+extlinks
+!! config
+wgUploadPath="/images"
+!! wikitext
+<flashmp3>http://sp%61m.example/x.mp3,https://example.com/a%2Fb%3Fc%23d%25e%26f.mp3?q=a%26b%3Dc%2B&x=%7E,https://example.com/a/./b/../c%2e%2Emp3,/images/x/../a/ab/A.mp3,https://example.com/[a] "b".mp3</flashmp3>
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"//cdn.example/%41.mp3","coverImageUrl":"https://example.com/%63.jpg","lrcFileUrl":"https://example.com/%6C.lrc","navigationUrl":"https://ex%61mple.com/page%3Fx"}]}</modernsoundmanager>
+!! metadata
+extlink=http://spam.example/x.mp3
+extlink=https://example.com/a%2Fb%3Fc%23d%25e&f.mp3?q=a%26b%3Dc%2B&x=~
+extlink=https://example.com/a/c..mp3
+extlink=https://example.com/%5Ba%5D%20%22b%22.mp3
+extlink=//cdn.example/A.mp3
+extlink=https://example.com/page%3Fx
+extlink=https://example.com/c.jpg
+extlink=https://example.com/l.lrc
+!! html/php
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://spam.example/x.mp3&quot;,&quot;title&quot;:&quot;x.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://example.com/a%2Fb%3Fc%23d%25e\u0026f.mp3?q=a%26b%3Dc%2B\u0026x=~&quot;,&quot;title&quot;:&quot;a/b?c#d%e\u0026f.mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;https://example.com/a/c..mp3&quot;,&quot;title&quot;:&quot;c..mp3&quot;,&quot;nofollow&quot;:true},{&quot;src&quot;:&quot;/images/a/ab/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;},{&quot;src&quot;:&quot;https://example.com/%5Ba%5D%20%22b%22.mp3&quot;,&quot;title&quot;:&quot;[a] \&quot;b\&quot;.mp3&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="http://spam.example/x.mp3" rel="nofollow">x.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/a%2Fb%3Fc%23d%25e&amp;f.mp3?q=a%26b%3Dc%2B&amp;x=~" rel="nofollow">a/b?c#d%e&amp;f.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/a/c..mp3" rel="nofollow">c..mp3</a></li><li><a class="ext-gramophone-fallback-link" href="/images/a/ab/A.mp3">A.mp3</a></li><li><a class="ext-gramophone-fallback-link" href="https://example.com/%5Ba%5D%20%22b%22.mp3" rel="nofollow">[a] "b".mp3</a></li></ol></div>
+<div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;//cdn.example/A.mp3&quot;,&quot;title&quot;:&quot;A.mp3&quot;,&quot;cover&quot;:&quot;https://example.com/c.jpg&quot;,&quot;lyrics&quot;:&quot;https://example.com/l.lrc&quot;,&quot;link&quot;:&quot;https://example.com/page%3Fx&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="//cdn.example/A.mp3" rel="nofollow">A.mp3</a></li></ol></div>
+!! end
+
+!! article
+Template:Gramophone ten files
+!! text
+f.mp3,f.mp3,f.mp3,f.mp3,f.mp3,f.mp3,f.mp3,f.mp3,f.mp3,f.mp3,
+!! endarticle
+
+!! article
+Template:Gramophone hundred files
+!! text
+{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}{{Gramophone ten files}}
+!! endarticle
+
+!! article
+Template:Gramophone thousand files
+!! text
+{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}{{Gramophone hundred files}}
+!! endarticle
+
+!! test
+A tag with more tracks than a page may have shows an error and resolves nothing, later tags still render
+!! options
+cat
+showmedia
+!! wikitext
+{{#tag:sm2|{{Gramophone thousand files}}{{Gramophone thousand files}}{{Gramophone thousand files}}{{Gramophone thousand files}}{{Gramophone thousand files}}a.mp3}} <sm2>Audio.oga</sm2>
+!! metadata
+cat=Pages_with_audio_players sort=
+images=Audio.oga
+!! html/php
+<p><strong class="error ext-gramophone-error">Audio player error: This page has too many audio tracks. The players on one page can have at most 5,000 tracks together.</strong> <span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;http://example.com/images/4/41/Audio.oga&quot;,&quot;title&quot;:&quot;Audio.oga&quot;,&quot;link&quot;:&quot;/wiki/File:Audio.oga&quot;}]}"><a class="ext-gramophone-fallback-link" href="http://example.com/images/4/41/Audio.oga" title="Audio.oga">Audio.oga</a></span>
+</p>
+!! end

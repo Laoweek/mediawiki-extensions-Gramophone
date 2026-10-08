@@ -1,0 +1,14 @@
+<includeonly>|-
+| {{{n}}}
+| {{{title}}}
+| {{#tag:playbutton|{{{file}}}|title={{{title}}}}}
+| [{{{link}}} Apple Music]</includeonly><noinclude>
+One row of a track list: the number, the title, a play button and a link to the song's page.
+
+<pre>
+{| class="wikitable"
+! # !! Title !! Preview !! Listen
+{{Track|n=1|title=Div.A3|file=Div.A3.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726374}}
+|}
+</pre>
+</noinclude>

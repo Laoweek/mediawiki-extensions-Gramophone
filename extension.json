@@ -1,0 +1,114 @@
+{
+	"name": "Gramophone",
+	"url": "https://github.com/Laoweek/mediawiki-extensions-Gramophone",
+	"author": [
+		"Gramophone contributors"
+	],
+	"descriptionmsg": "gramophone-desc",
+	"license-name": "MIT",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.43.0"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\Gramophone\\": "includes/"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\Gramophone\\Hooks",
+			"services": [
+				"MainConfig",
+				"UrlUtils"
+			]
+		},
+		"templatestyles": {
+			"class": "MediaWiki\\Extension\\Gramophone\\TemplateStylesHooks"
+		}
+	},
+	"Hooks": {
+		"ParserFirstCallInit": "main",
+		"TemplateStylesPropertySanitizer": "templatestyles"
+	},
+	"MessagesDirs": {
+		"Gramophone": [
+			"i18n"
+		]
+	},
+	"TrackingCategories": [
+		"gramophone-tracking-category",
+		"gramophone-missing-file-category"
+	],
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "Gramophone/resources"
+	},
+	"ResourceModules": {
+		"ext.gramophone.styles": {
+			"styles": [
+				"ext.gramophone.styles.css"
+			]
+		},
+		"ext.gramophone": {
+			"packageFiles": [
+				"dist/gramophone.js"
+			],
+			"messages": [
+				"gramophone-play",
+				"gramophone-pause",
+				"gramophone-load-error",
+				"gramophone-missing-file",
+				"gramophone-unknown-title",
+				"gramophone-track-of"
+			]
+		},
+		"ext.gramophone.player": {
+			"packageFiles": [
+				"dist/gramophone.player.js"
+			],
+			"dependencies": [
+				"ext.gramophone"
+			],
+			"messages": [
+				"gramophone-previous",
+				"gramophone-next",
+				"gramophone-seek",
+				"gramophone-volume",
+				"gramophone-mute",
+				"gramophone-unmute",
+				"gramophone-repeat-off",
+				"gramophone-repeat-all",
+				"gramophone-repeat-one",
+				"gramophone-playlist",
+				"gramophone-lyrics",
+				"gramophone-lyrics-loading",
+				"gramophone-lyrics-error",
+				"gramophone-download",
+				"gramophone-open-file-page",
+				"gramophone-speed",
+				"gramophone-loading",
+				"gramophone-autoplay-blocked",
+				"gramophone-explicit",
+				"gramophone-now-playing"
+			]
+		}
+	},
+	"config": {
+		"GramophoneLegacyColors": {
+			"value": false,
+			"description": "Whether the file list tags (<gramophone>, <playbutton>, <flashmp3> and <sm2>) apply their legacy colour options (bg, text, tracker and track). Off by default, so these players use the site theme. Colours in a JSON playlist always apply."
+		},
+		"GramophoneAllowedHosts": {
+			"value": null,
+			"description": "Hosts that external audio, cover and lyrics URLs may point to. Each entry allows that host and its subdomains. URLs on other hosts are treated as unusable. Null allows every host. Wiki files and paths on the wiki's own site are always allowed."
+		},
+		"GramophoneSm2ShimTags": {
+			"value": true,
+			"description": "Whether to register the <flashmp3>, <sm2> and <modernsoundmanager> tags of Sm2Shim and FlashMP3. Turn it off on a wiki that never used them, or that loads another extension with these tags."
+		},
+		"GramophoneAudioButtonTag": {
+			"value": false,
+			"description": "Whether to register the <ab> tag of the AudioButton extension and render it as a <playbutton> button. Do not load AudioButton at the same time."
+		}
+	},
+	"manifest_version": 2
+}

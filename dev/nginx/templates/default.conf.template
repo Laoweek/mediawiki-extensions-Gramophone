@@ -1,0 +1,41 @@
+# Uploads origin for the dev wiki, like an upload CDN that sends
+# Access-Control-Allow-Origin for the wiki origin and supports Range requests.
+include /etc/nginx/mime.types;
+types {
+	text/plain lrc;
+}
+charset utf-8;
+charset_types text/plain text/css application/json;
+
+server {
+	listen 8144;
+	server_name _;
+	add_header Access-Control-Allow-Origin "${GRAMOPHONE_DEV_SERVER}" always;
+	add_header Cache-Control "no-cache" always;
+
+	location /images/ {
+		alias /srv/images/;
+	}
+	# dev/media/wiki as a mirror on another site that the wiki trusts.
+	location /media/ {
+		alias /srv/media/wiki/;
+	}
+	location = / {
+		return 200 "Gramophone dev uploads origin (CORS for ${GRAMOPHONE_DEV_SERVER})\n";
+	}
+}
+
+# A "third-party" host without any CORS headers, serving the same files. Audio from here
+# must still play (no crossOrigin attribute), fetching LRC from here is expected to fail.
+server {
+	listen 8145;
+	server_name _;
+	add_header Cache-Control "no-cache" always;
+
+	location /media/ {
+		alias /srv/media/wiki/;
+	}
+	location = / {
+		return 200 "Gramophone dev third-party host (no CORS)\n";
+	}
+}

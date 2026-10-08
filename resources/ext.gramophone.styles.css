@@ -1,0 +1,533 @@
+/*
+ * Gramophone light-DOM styles (module ext.gramophone.styles).
+ *
+ * 1. Public theme tokens. Site CSS may override any --gramophone-* property on
+ *    .ext-gramophone. They inherit into the players' shadow roots.
+ * 2. The host boxes. Sizes match the hydrated players exactly, so replacing
+ *    the placeholder causes no layout shift.
+ * 3. The placeholder shown before the script runs, and the plain fallback
+ *    for readers without JavaScript (html.client-nojs).
+ */
+
+/* 1. Tokens ---------------------------------------------------------------- */
+
+/* shadcn/ui zinc neutrals with Gramophone's default accent #d86575 as primary. Site CSS
+   can set --gramophone-primary (or any other token) on .ext-gramophone, and the shades
+   below follow it in browsers with color-mix(). The hex values are the
+   same shades for older browsers. */
+.ext-gramophone,
+.ext-gramophone-tooltip {
+	--gramophone-background: #fff;
+	--gramophone-foreground: #18181b;
+	--gramophone-muted: #f4f4f5;
+	--gramophone-muted-foreground: #676769;
+	--gramophone-border: #e4e4e7;
+	--gramophone-accent: #f4f4f5;
+	--gramophone-accent-foreground: var(--gramophone-foreground);
+	--gramophone-primary: #d86575;
+	--gramophone-primary-foreground: #fff;
+	--gramophone-primary-hover: #c15c6a;
+	--gramophone-primary-soft: #fbf0f1;
+	--gramophone-highlight: #a24c58;
+	--gramophone-ring: var(--gramophone-primary);
+	--gramophone-track: #f5d9dd;
+	--gramophone-range: var(--gramophone-primary);
+	--gramophone-thumb: var(--gramophone-background);
+	--gramophone-buffered: #efc1c8;
+	--gramophone-destructive: #dc2626;
+	--gramophone-cover-from: var(--gramophone-primary);
+	--gramophone-cover-to: #ecb2ba;
+	--gramophone-cover-foreground: #fff;
+	--gramophone-radius: 0.75rem;
+	--gramophone-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--gramophone-button-size: 1.75rem;
+	--gramophone-cover-size: 6rem;
+	--gramophone-row-height: 2.5rem;
+	--gramophone-max-width: 40rem;
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+	.ext-gramophone,
+	.ext-gramophone-tooltip {
+		--gramophone-muted: color-mix(in srgb, var(--gramophone-foreground) 5%, var(--gramophone-background));
+		--gramophone-muted-foreground: color-mix(in srgb, var(--gramophone-foreground) 66%, var(--gramophone-background));
+		--gramophone-border: color-mix(in srgb, var(--gramophone-foreground) 12%, var(--gramophone-background));
+		--gramophone-accent: color-mix(in srgb, var(--gramophone-foreground) 6%, var(--gramophone-background));
+		--gramophone-primary-hover: color-mix(in srgb, var(--gramophone-primary) 88%, var(--gramophone-foreground));
+		--gramophone-primary-soft: color-mix(in srgb, var(--gramophone-primary) 10%, var(--gramophone-background));
+		/* Small text in the accent colour (current track, active lyric line)
+		   uses a darker shade: white and the accent are only 3.5:1. */
+		--gramophone-highlight: color-mix(in srgb, var(--gramophone-primary) 75%, #000);
+		--gramophone-track: color-mix(in srgb, var(--gramophone-primary) 25%, var(--gramophone-background));
+		--gramophone-buffered: color-mix(in srgb, var(--gramophone-primary) 40%, var(--gramophone-background));
+		--gramophone-cover-to: color-mix(in srgb, var(--gramophone-primary) 50%, #fff);
+	}
+}
+
+/* Dark mode: the MediaWiki night theme (Vector 2022, Minerva, Citizen),
+   Citizen's black theme, or "automatic" following the OS. The accent stays
+   the same (4.9:1 on the dark card), text in it gets a lighter shade.
+   A site that sets a light --gramophone-primary should also set
+   --gramophone-primary-foreground and --gramophone-highlight. */
+html.skin-theme-clientpref-night .ext-gramophone,
+html.skin-theme-clientpref-night .ext-gramophone-tooltip,
+html.skin-theme-clientpref-black .ext-gramophone,
+html.skin-theme-clientpref-black .ext-gramophone-tooltip {
+	--gramophone-background: #1c1c1f;
+	--gramophone-foreground: #f4f4f5;
+	--gramophone-highlight: #e69ba5;
+	--gramophone-destructive: #f87171;
+	--gramophone-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+	html.skin-theme-clientpref-os .ext-gramophone,
+	html.skin-theme-clientpref-os .ext-gramophone-tooltip {
+		--gramophone-background: #1c1c1f;
+		--gramophone-foreground: #f4f4f5;
+		--gramophone-highlight: #e69ba5;
+		--gramophone-destructive: #f87171;
+		--gramophone-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+	}
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+	html.skin-theme-clientpref-night .ext-gramophone,
+	html.skin-theme-clientpref-night .ext-gramophone-tooltip,
+	html.skin-theme-clientpref-black .ext-gramophone,
+	html.skin-theme-clientpref-black .ext-gramophone-tooltip {
+		--gramophone-primary-soft: color-mix(in srgb, var(--gramophone-primary) 16%, var(--gramophone-background));
+		--gramophone-highlight: color-mix(in srgb, var(--gramophone-primary) 65%, #fff);
+		--gramophone-track: color-mix(in srgb, var(--gramophone-primary) 30%, var(--gramophone-background));
+		--gramophone-cover-to: color-mix(in srgb, var(--gramophone-primary) 45%, var(--gramophone-background));
+	}
+
+	@media (prefers-color-scheme: dark) {
+		html.skin-theme-clientpref-os .ext-gramophone,
+		html.skin-theme-clientpref-os .ext-gramophone-tooltip {
+			--gramophone-primary-soft: color-mix(in srgb, var(--gramophone-primary) 16%, var(--gramophone-background));
+			--gramophone-highlight: color-mix(in srgb, var(--gramophone-primary) 65%, #fff);
+			--gramophone-track: color-mix(in srgb, var(--gramophone-primary) 30%, var(--gramophone-background));
+			--gramophone-cover-to: color-mix(in srgb, var(--gramophone-primary) 45%, var(--gramophone-background));
+		}
+	}
+}
+
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+	html.skin-theme-clientpref-night .ext-gramophone,
+	html.skin-theme-clientpref-night .ext-gramophone-tooltip,
+	html.skin-theme-clientpref-black .ext-gramophone,
+	html.skin-theme-clientpref-black .ext-gramophone-tooltip {
+		--gramophone-muted: #27272a;
+		--gramophone-muted-foreground: #ababac;
+		--gramophone-border: #363639;
+		--gramophone-accent: #29292c;
+		--gramophone-primary-hover: #db7684;
+		--gramophone-primary-soft: #3a282d;
+		--gramophone-track: #543239;
+		--gramophone-buffered: #673941;
+		--gramophone-cover-to: #713d46;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		html.skin-theme-clientpref-os .ext-gramophone,
+		html.skin-theme-clientpref-os .ext-gramophone-tooltip {
+			--gramophone-muted: #27272a;
+			--gramophone-muted-foreground: #ababac;
+			--gramophone-border: #363639;
+			--gramophone-accent: #29292c;
+			--gramophone-primary-hover: #db7684;
+			--gramophone-primary-soft: #3a282d;
+			--gramophone-track: #543239;
+			--gramophone-buffered: #673941;
+			--gramophone-cover-to: #713d46;
+		}
+	}
+}
+
+/* The players' font: --gramophone-font-family, the page font by default. */
+.ext-gramophone,
+.ext-gramophone-tooltip {
+	font-family: var(--gramophone-font-family, inherit);
+}
+
+/* 2. Host boxes and 3. placeholder (JavaScript available) ------------------ */
+
+/* The player shrinks with its container down to 10rem (the narrowest
+   layout). Without a floor it would collapse in table cells and floats,
+   because inline-size containment gives it no intrinsic width. */
+:root:not(.client-nojs) .ext-gramophone-player {
+	display: block;
+	position: relative;
+	box-sizing: border-box;
+	min-width: 10rem;
+	max-width: var(--gramophone-max-width);
+	margin: 0.5em 0;
+	container: gramophone / inline-size;
+	color: var(--gramophone-foreground);
+	text-align: start;
+}
+
+:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback {
+	position: relative;
+	box-sizing: border-box;
+	height: calc(max(6rem, var(--gramophone-cover-size)) + 1.5rem + 2px);
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid var(--gramophone-border);
+	border-radius: var(--gramophone-radius);
+	background: var(--gramophone-background);
+	box-shadow: var(--gramophone-shadow);
+	list-style: none;
+}
+
+/* Cover art placeholder. */
+:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::before {
+	content: "";
+	position: absolute;
+	top: 0.75rem;
+	left: 0.75rem;
+	width: var(--gramophone-cover-size);
+	height: var(--gramophone-cover-size);
+	border-radius: calc(var(--gramophone-radius) - 0.25rem);
+	background: linear-gradient(135deg, var(--gramophone-cover-from), var(--gramophone-cover-to));
+}
+
+/* Subtitle skeleton. The title row is max(3rem, cover size - 3rem) high,
+   and the title and subtitle are centred in it. */
+:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::after {
+	content: "";
+	position: absolute;
+	top: calc(max(1.5rem, var(--gramophone-cover-size) / 2 - 1.5rem) + 1.125rem);
+	left: calc(var(--gramophone-cover-size) + 1.625rem);
+	width: min(9rem, 40%);
+	height: 0.625rem;
+	border-radius: 9999px;
+	background: var(--gramophone-muted);
+}
+
+:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback > li {
+	display: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* The first track title sits where the hydrated title will be. */
+:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback > li:first-child {
+	display: block;
+	position: absolute;
+	top: calc(max(1.5rem, var(--gramophone-cover-size) / 2 - 1.5rem) - 0.5625rem);
+	right: 0.75rem;
+	left: calc(var(--gramophone-cover-size) + 1.625rem);
+	overflow: hidden;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1.375rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:root:not(.client-nojs) .ext-gramophone-player .ext-gramophone-fallback-link,
+:root:not(.client-nojs) .ext-gramophone-player .ext-gramophone-fallback-link:visited {
+	color: var(--gramophone-foreground);
+	text-decoration: none;
+}
+
+@container gramophone (max-width: 34.99rem) {
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback {
+		height: calc(9.625rem + 2px);
+	}
+
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::before {
+		width: 3.5rem;
+		height: 3.5rem;
+	}
+
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::after {
+		top: 2.875rem;
+		left: 5rem;
+	}
+
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback > li:first-child {
+		top: 1.1875rem;
+		left: 5rem;
+	}
+}
+
+@container gramophone (max-width: 17.99rem) {
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::before {
+		display: none;
+	}
+
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::after,
+	:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback > li:first-child {
+		left: 0.75rem;
+	}
+}
+
+/* Browsers without container queries: approximate with the viewport width
+   (the player script does the same). */
+@supports not (container-type: inline-size) {
+	@media (max-width: 40rem) {
+		:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback {
+			height: calc(9.625rem + 2px);
+		}
+
+		:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::before {
+			width: 3.5rem;
+			height: 3.5rem;
+		}
+
+		:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback::after {
+			top: 2.875rem;
+			left: 5rem;
+		}
+
+		:root:not(.client-nojs) .ext-gramophone-player > .ext-gramophone-fallback > li:first-child {
+			top: 1.1875rem;
+			left: 5rem;
+		}
+	}
+}
+
+/* Playlist drawer open at load (playlistOpen with more than one track):
+   the rows match the hydrated drawer, at most five visible. */
+:root:not(.client-nojs) .ext-gramophone-player[data-mw-gramophone*='"playlistOpen":true'] > .ext-gramophone-fallback:has(> li + li) {
+	--gramophone-bar: calc(max(6rem, var(--gramophone-cover-size)) + 1.5rem);
+	height: auto;
+	padding: calc(var(--gramophone-bar) + 1px + 0.25rem) 0.25rem 0.25rem;
+	background-image: linear-gradient(var(--gramophone-border), var(--gramophone-border));
+	background-position: 0 var(--gramophone-bar);
+	background-repeat: no-repeat;
+	background-size: 100% 1px;
+}
+
+:root:not(.client-nojs) .ext-gramophone-player[data-mw-gramophone*='"playlistOpen":true'] > .ext-gramophone-fallback:has(> li + li)::after {
+	display: none;
+}
+
+:root:not(.client-nojs) .ext-gramophone-player[data-mw-gramophone*='"playlistOpen":true'] > .ext-gramophone-fallback:has(> li + li) > li {
+	display: block;
+	position: static;
+	height: 2.25rem;
+	padding: 0 0.5rem 0 2.375rem;
+	overflow: hidden;
+	font-size: 0.8125rem;
+	font-weight: 400;
+	line-height: 2.25rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:root:not(.client-nojs) .ext-gramophone-player[data-mw-gramophone*='"playlistOpen":true'] > .ext-gramophone-fallback:has(> li + li) > li:nth-child(n + 6) {
+	display: none;
+}
+
+@container gramophone (max-width: 34.99rem) {
+	:root:not(.client-nojs) .ext-gramophone-player[data-mw-gramophone*='"playlistOpen":true'] > .ext-gramophone-fallback:has(> li + li) {
+		--gramophone-bar: 9.625rem;
+	}
+}
+
+@supports not (container-type: inline-size) {
+	@media (max-width: 40rem) {
+		:root:not(.client-nojs) .ext-gramophone-player[data-mw-gramophone*='"playlistOpen":true'] > .ext-gramophone-fallback:has(> li + li) {
+			--gramophone-bar: 9.625rem;
+		}
+	}
+}
+
+/* No artist or album: the hydrated title stands alone, vertically centred.
+   The JSON leaves empty keys out, so here no track may name an artist or
+   album. */
+:root:not(.client-nojs) .ext-gramophone-player:not([data-mw-gramophone*='"artist":']):not([data-mw-gramophone*='"album":']) > .ext-gramophone-fallback::after {
+	display: none;
+}
+
+:root:not(.client-nojs) .ext-gramophone-player:not([data-mw-gramophone*='"artist":']):not([data-mw-gramophone*='"album":']) > .ext-gramophone-fallback > li:first-child {
+	top: calc(max(1.5rem, var(--gramophone-cover-size) / 2 - 1.5rem) + 0.0625rem);
+}
+
+@container gramophone (max-width: 34.99rem) {
+	:root:not(.client-nojs) .ext-gramophone-player:not([data-mw-gramophone*='"artist":']):not([data-mw-gramophone*='"album":']) > .ext-gramophone-fallback > li:first-child {
+		top: 1.8125rem;
+	}
+}
+
+@supports not (container-type: inline-size) {
+	@media (max-width: 40rem) {
+		:root:not(.client-nojs) .ext-gramophone-player:not([data-mw-gramophone*='"artist":']):not([data-mw-gramophone*='"album":']) > .ext-gramophone-fallback > li:first-child {
+			top: 1.8125rem;
+		}
+	}
+}
+
+/* Table-row player: one track in a table cell renders as a 2.5rem pill
+   (see client/src/row.ts), the row already names the track. The width floor
+   follows the viewport: a seek bar on desktop, a play button with a progress
+   ring on phones, so narrow tables keep room for their text columns. */
+:root:not(.client-nojs) :is(td, th) .ext-gramophone-player:has(> .ext-gramophone-fallback > li:only-child) {
+	min-width: clamp(5.75rem, 40vw - 9rem, 14rem);
+	margin: 0;
+}
+
+:root:not(.client-nojs) :is(td, th) .ext-gramophone-player:has(> .ext-gramophone-fallback > li:only-child) > .ext-gramophone-fallback {
+	height: var(--gramophone-row-height);
+	border: 0;
+	border-radius: 9999px;
+	background: var(--gramophone-muted);
+	box-shadow: none;
+}
+
+/* Play button. */
+:root:not(.client-nojs) :is(td, th) .ext-gramophone-player:has(> .ext-gramophone-fallback > li:only-child) > .ext-gramophone-fallback::before {
+	display: block;
+	top: calc(var(--gramophone-row-height) / 2 - 1rem);
+	left: 0.25rem;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background: var(--gramophone-primary);
+}
+
+/* Seek bar. */
+:root:not(.client-nojs) :is(td, th) .ext-gramophone-player:has(> .ext-gramophone-fallback > li:only-child) > .ext-gramophone-fallback::after {
+	display: block;
+	top: calc(var(--gramophone-row-height) / 2 - 0.125rem);
+	right: 0.875rem;
+	left: 2.75rem;
+	width: auto;
+	height: 0.25rem;
+	background: var(--gramophone-track);
+}
+
+/* The link stays focusable (focus mounts the player) but shows no title. */
+:root:not(.client-nojs) :is(td, th) .ext-gramophone-player:has(> .ext-gramophone-fallback > li:only-child) > .ext-gramophone-fallback > li:first-child {
+	inset: 0;
+	color: transparent;
+	font-size: 0;
+}
+
+:root:not(.client-nojs) :is(td, th) .ext-gramophone-player:has(> .ext-gramophone-fallback > li:only-child) .ext-gramophone-fallback-link {
+	position: absolute;
+	inset: 0;
+	border-radius: 9999px;
+	color: transparent;
+}
+
+/* Without :has(), every player in a table cell gets the row placeholder:
+   a multi-track player there grows once when it mounts. */
+@supports not selector(:has(a)) {
+	:root:not(.client-nojs) :is(td, th) .ext-gramophone-player {
+		min-width: clamp(5.75rem, 40vw - 9rem, 14rem);
+		margin: 0;
+	}
+
+	:root:not(.client-nojs) :is(td, th) .ext-gramophone-player > .ext-gramophone-fallback {
+		height: var(--gramophone-row-height);
+		border: 0;
+		border-radius: 9999px;
+		background: var(--gramophone-muted);
+		box-shadow: none;
+	}
+
+	:root:not(.client-nojs) :is(td, th) .ext-gramophone-player > .ext-gramophone-fallback::before,
+	:root:not(.client-nojs) :is(td, th) .ext-gramophone-player > .ext-gramophone-fallback::after,
+	:root:not(.client-nojs) :is(td, th) .ext-gramophone-player > .ext-gramophone-fallback > li:first-child {
+		display: none;
+	}
+}
+
+/* Compact button: a fixed square box that sits on the text line. */
+:root:not(.client-nojs) .ext-gramophone-button {
+	display: inline-block;
+	position: relative;
+	box-sizing: border-box;
+	width: var(--gramophone-button-size);
+	height: var(--gramophone-button-size);
+	vertical-align: middle;
+	line-height: 0;
+	text-indent: 0;
+}
+
+:root:not(.client-nojs) .ext-gramophone-button > .ext-gramophone-fallback-link {
+	position: absolute;
+	inset: 0;
+	display: block;
+	overflow: hidden;
+	border-radius: 50%;
+	color: transparent;
+	font-size: 0;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+:root:not(.client-nojs) .ext-gramophone-button > .ext-gramophone-fallback-link ~ .ext-gramophone-fallback-link {
+	display: none;
+}
+
+:root:not(.client-nojs) .ext-gramophone-button > .ext-gramophone-fallback-link::before {
+	content: "";
+	position: absolute;
+	inset: 14%;
+	border-radius: 50%;
+	background: var(--gramophone-primary-soft);
+}
+
+/* Play glyph (Lucide "play", ISC license). */
+:root:not(.client-nojs) .ext-gramophone-button > .ext-gramophone-fallback-link::after {
+	content: "";
+	position: absolute;
+	inset: 28%;
+	background: var(--gramophone-primary);
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* hidemissing=yes: invisible but keeping its box until the script has found
+   the file (ext-gramophone-checked), gone when none of its files exist (hidden). */
+:root:not(.client-nojs) .ext-gramophone-button[data-mw-gramophone*='"hideMissing":true']:not(.ext-gramophone-checked) {
+	visibility: hidden;
+}
+
+/* A button the script never takes over (ext-gramophone-checking), because it failed
+   to load or an outdated cached copy runs, appears after 10 s. */
+:root:not(.client-nojs) .ext-gramophone-button[data-mw-gramophone*='"hideMissing":true']:not(.ext-gramophone-checked):not(.ext-gramophone-checking) {
+	animation: ext-gramophone-reveal 0s 10s forwards;
+}
+
+@keyframes ext-gramophone-reveal {
+	to {
+		visibility: visible;
+	}
+}
+
+:root:not(.client-nojs) .ext-gramophone-button[hidden] {
+	display: none;
+}
+
+/* Tooltip host (one per page, created by the script). */
+.ext-gramophone-tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 0;
+	height: 0;
+}
+
+/* 3. No JavaScript: plain, usable links --------------------------------------- */
+
+.client-nojs .ext-gramophone-player > .ext-gramophone-fallback {
+	max-width: var(--gramophone-max-width);
+	margin: 0.5em 0;
+	padding: 0.5em 0.75em 0.5em 2.25em;
+	border: 1px solid var(--gramophone-border);
+	border-radius: var(--gramophone-radius);
+}
+
+.client-nojs .ext-gramophone-button > .ext-gramophone-fallback-link::before {
+	content: "\25B6\FE0E";
+	margin-right: 0.25em;
+	font-size: 0.8em;
+}

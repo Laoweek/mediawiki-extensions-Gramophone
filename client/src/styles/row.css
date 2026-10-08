@@ -1,0 +1,253 @@
+/*
+ * Table-row player: a 2.5rem pill with play button, seek bar and time.
+ * The placeholder in ext.gramophone.styles.css has the same height.
+ *
+ *   11.5rem and up    play, position, seek bar, duration
+ *   8.5 to 11.5rem    play, seek bar, position
+ *   5.5 to 8.5rem     play button with a progress ring, position
+ *   below 5.5rem      play button with a progress ring
+ */
+:host {
+	display: block;
+	container-type: inline-size;
+}
+
+.pill {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	height: var(--gramophone-row-height, 2.5rem);
+	padding: 0 0.875rem 0 0.25rem;
+	border-radius: 9999px;
+	background: var(--muted);
+	color: var(--fg);
+	font-size: 0.875rem;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1.25rem;
+	letter-spacing: normal;
+	text-align: start;
+	text-indent: 0;
+	text-shadow: none;
+	text-transform: none;
+	white-space: nowrap;
+	word-spacing: normal;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* A background colour from the wikitext colours the pill itself. */
+.pill.custom {
+	background: var(--bg);
+}
+
+.play {
+	position: relative;
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	background: var(--primary);
+	color: var(--primary-fg);
+	font: inherit;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: background-color 0.15s, transform 0.1s;
+}
+
+.play:hover {
+	background: var(--primary-hover);
+}
+
+.play:active {
+	transform: scale(0.95);
+}
+
+.play:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 2px;
+}
+
+.play .icon {
+	width: 0.875rem;
+	height: 0.875rem;
+	fill: currentColor;
+}
+
+.play .icon.spin {
+	fill: none;
+}
+
+/* Autoplay was blocked: invite a click. */
+.is-blocked .play::after {
+	content: "";
+	position: absolute;
+	inset: -0.25rem;
+	border: 2px solid var(--primary);
+	border-radius: inherit;
+	animation: gramophone-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+	pointer-events: none;
+}
+
+@keyframes gramophone-ping {
+	0% {
+		opacity: 0.7;
+		transform: scale(1);
+	}
+
+	80%,
+	100% {
+		opacity: 0;
+		transform: scale(1.35);
+	}
+}
+
+.is-error .play,
+.is-error .play:hover {
+	background: transparent;
+	color: var(--destructive);
+}
+
+.is-error .play .icon {
+	width: 1.125rem;
+	height: 1.125rem;
+	fill: none;
+}
+
+.play[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+
+/* Progress ring around the button, for cells too narrow for a seek bar. */
+.ring {
+	position: absolute;
+	inset: -0.1875rem;
+	display: none;
+	width: calc(100% + 0.375rem);
+	height: calc(100% + 0.375rem);
+	overflow: visible;
+	transform: rotate(-90deg);
+	pointer-events: none;
+}
+
+.ring circle {
+	fill: none;
+	stroke-width: 2;
+}
+
+.ring-bg {
+	stroke: var(--track);
+}
+
+.ring-fg {
+	stroke: var(--range);
+	stroke-linecap: round;
+}
+
+.time {
+	flex-shrink: 0;
+	color: var(--muted-fg);
+	font-size: 0.75rem;
+	line-height: 1rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.msg {
+	display: none;
+	min-width: 0;
+	overflow: hidden;
+	color: var(--destructive);
+	font-size: 0.8125rem;
+	text-overflow: ellipsis;
+}
+
+.is-error .msg {
+	display: block;
+}
+
+.is-error .time,
+.is-error .slider {
+	display: none;
+}
+
+/* Narrow: one time label, the position, after the seek bar. */
+@container (max-width: 11.49rem) {
+	.pill {
+		padding-right: 0.75rem;
+	}
+
+	.cur {
+		order: 1;
+	}
+
+	.dur {
+		display: none;
+	}
+}
+
+/* Very narrow: no seek bar, the ring shows the progress. */
+@container (max-width: 8.49rem) {
+	.pill {
+		gap: 0.5rem;
+		padding-left: 0.3125rem;
+		cursor: pointer;
+	}
+
+	.slider {
+		display: none;
+	}
+
+	.play {
+		width: 1.875rem;
+		height: 1.875rem;
+	}
+
+	.ring {
+		display: block;
+	}
+
+	/* Errors keep the alert icon, the message is in its tooltip. */
+	.is-error .ring,
+	.is-error .msg {
+		display: none;
+	}
+}
+
+/* Only the button. */
+@container (max-width: 5.49rem) {
+	.pill {
+		justify-content: center;
+		padding: 0;
+	}
+
+	.time {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.play {
+		transition: none;
+	}
+
+	.is-blocked .play::after {
+		animation: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.pill {
+		border: 1px solid CanvasText;
+	}
+
+	.play {
+		outline: 1px solid ButtonText;
+	}
+}

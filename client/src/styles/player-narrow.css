@@ -1,0 +1,95 @@
+/*
+ * Narrow layout (mobile, table cells, infoboxes). styles.ts applies it in a
+ * container query on the host, and with a viewport media query in browsers
+ * without container queries.
+ */
+.bar {
+	grid-template-columns: 3.5rem minmax(0, 1fr);
+	grid-template-rows: 3.5rem 4rem;
+	grid-template-areas: "cover meta" "ctrl ctrl";
+	column-gap: 0.75rem;
+	row-gap: 0.625rem;
+}
+
+.cover {
+	width: 3.5rem;
+	height: 3.5rem;
+}
+
+.cover-icon {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.ctrl {
+	grid-template-columns: 1fr auto 1fr;
+	grid-template-rows: 1.25rem 2.5rem;
+	grid-template-areas: "seek seek seek" "loop transport opts";
+	column-gap: 0.625rem;
+	row-gap: 0.25rem;
+}
+
+.seek {
+	margin: 0;
+}
+
+.prev {
+	margin-left: 0;
+}
+
+.loop {
+	justify-self: start;
+	margin-left: -0.25rem;
+}
+
+.opts {
+	justify-self: end;
+}
+
+/* Very narrow (table cells, infoboxes, quotes on phones): drop secondary
+   controls one by one, so the title, transport and both times always fit.
+   The row heights stay the same, so the placeholder size still matches. */
+@container (max-width: 23.99rem) {
+	.dl {
+		display: none;
+	}
+}
+
+@container (max-width: 17.99rem) {
+	.bar {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas: "meta" "ctrl";
+	}
+
+	.cover {
+		display: none;
+	}
+}
+
+@container (max-width: 16.49rem) {
+	.speed {
+		display: none;
+	}
+}
+
+@container (max-width: 13.99rem) {
+	.repeat,
+	.file,
+	.row-artist {
+		display: none;
+	}
+}
+
+@container (max-width: 11.99rem) {
+	.vol {
+		display: none;
+	}
+
+	.seek {
+		gap: 0.375rem;
+	}
+
+	.time {
+		min-width: 2rem;
+	}
+}

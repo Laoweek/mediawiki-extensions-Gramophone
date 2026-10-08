@@ -1,0 +1,30 @@
+'''Gramophone Dev''' is a small music wiki for trying out the [[Special:Version#mw-version-ext-parserhook-Gramophone|Gramophone]] extension. Its pages use the extension the way a fan wiki would: an album with its track list, a song with lyrics, an artist page and a page of previews. One more page is written with the old Sm2Shim tags, to show that old wikitext still works.
+
+== Song of the week ==
+{{Song
+| file = Galactic Love.mp3
+| title = Galactic Love
+| artist = La prière
+| album = Galaxy Triangle
+| cover = Galaxy Triangle cover.jpg
+| link = https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726680
+}}
+Galactic Love is the sixth song on [[Galaxy Triangle]]. The player comes from [[Template:Song]].
+
+== Pages ==
+* [[Galaxy Triangle]], an album by La prière: the whole album as a playlist, a track list with play buttons and a table of previews
+* [[Bubblin']], a song by HIMEHINA: the lyrics panel, with the lyrics file on the wiki and on another site
+* [[VALIS]], the artist of Mukyu Platonic: a player in an infobox, a play button in a sentence and a player with a cover
+* [[Previews]]: play buttons only, for files on a mirror, on a site without CORS and behind Special:FilePath
+* [[Sm2Shim compatibility]]: the old tags <code>&lt;flashmp3&gt;</code>, <code>&lt;sm2&gt;</code>, <code>&lt;modernsoundmanager&gt;</code> and <code>&lt;ab&gt;</code>
+
+Files: [[Special:ListFiles]]. Other skins: [{{fullurl:Galaxy Triangle|useskin=vector-2022}} Vector 2022], [{{fullurl:Galaxy Triangle|useskin=timeless}} Timeless], [{{fullurl:Galaxy Triangle|useformat=mobile}} phone with Citizen], [{{fullurl:Galaxy Triangle|useformat=mobile&useskin=minerva}} phone with Minerva].
+
+== Music ==
+Music: "Galaxy Triangle" by La prière, "Bubblin'" by HIMEHINA and "Mukyu Platonic" by VALIS. 30-second previews and cover art from Apple Music, owned by the artists and their labels.
+
+* [https://music.apple.com/us/album/galaxy-triangle/1550726371 Galaxy Triangle on Apple Music]
+* [https://music.apple.com/us/album/bubblin/1818284776?i=1818284945 Bubblin' on Apple Music]
+* [https://music.apple.com/us/album/mukyu-platonic/1678711097?i=1678711098 Mukyu Platonic on Apple Music]
+
+The lyrics file [[:File:Bubblin.lrc|Bubblin.lrc]] holds lines written for this wiki that explain the lyrics panel. They are not the song's lyrics.

@@ -1,0 +1,15 @@
+<includeonly>{{#tag:gramophone|{"playlist":[{"audioFileUrl":"{{{file}}}","title":"{{{title|}}}","artist":"{{{artist|}}}","album":"{{{album|}}}","coverImageUrl":"{{{cover|}}}","lrcFileUrl":"{{{lyrics|}}}","navigationUrl":"{{{link|}}}"}]} }}</includeonly><noinclude>
+A player for one song with its details. Only <code>file</code> is required.
+
+<pre>
+{{Song
+| file = Galactic Love.mp3
+| title = Galactic Love
+| artist = La prière
+| album = Galaxy Triangle
+| cover = Galaxy Triangle cover.jpg
+| lyrics = an LRC file
+| link = the song's page
+}}
+</pre>
+</noinclude>

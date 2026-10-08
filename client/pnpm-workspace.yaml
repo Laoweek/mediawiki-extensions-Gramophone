@@ -1,0 +1,14 @@
+# esbuild's install script is not needed: its platform binary comes from an
+# optional dependency package.
+allowBuilds:
+  esbuild: false
+
+# Supply-chain hardening. Install only versions published at least 7 days ago
+# (pnpm counts minutes), and refuse a version published with weaker trust
+# evidence (trusted publisher, provenance) than an earlier release.
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+# Exact versions let in before they are 7 days old. Remove each entry once
+# that version is older than 7 days. lucide 1.51.0 was published 2026-10-03.
+minimumReleaseAgeExclude:
+  - lucide@1.51.0

@@ -1,0 +1,18 @@
+[ti:Lyrics test: two timestamps per line]
+[re:Gramophone test file for scripts/visual-check.mjs. Original test text, not the lyrics of any song.]
+[00:00.00](Test start)
+[00:00.00](each test line has a gloss line under it)
+[00:03.00][00:18.00]Line A has two timestamps
+[00:03.00][00:18.00]Gloss A: it lights up at 0:03 and again at 0:18
+[00:06.00]Line B starts at 0:06
+[00:06.00]Gloss B: the translation slot of line B
+[00:09.00]
+[00:12.00]Line C comes after an empty line
+[00:12.00]Gloss C: the empty line shows as a gap
+[00:15.00]Line D starts at 0:15
+[00:15.00]Gloss D: a seek that lands here lights it up
+[00:21.00]Line E starts at 0:21
+[00:21.00]Gloss E: after the second time of line A
+[00:24.50]Line F seeks to 0:24.5 when clicked
+[00:24.50]Gloss F: the click target of the check
+[00:28.00](Test end)

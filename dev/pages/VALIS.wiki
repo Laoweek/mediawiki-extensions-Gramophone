@@ -1,0 +1,31 @@
+{| class="wikitable infobox"
+! colspan="2" class="infobox-title" | VALIS
+|-
+| colspan="2" class="infobox-image" | [[File:Mukyu Platonic cover.jpg|240px|Cover of Mukyu Platonic]]
+|-
+! Single
+| Mukyu Platonic (2023)
+|-
+! Listen
+| <gramophone>Mukyu Platonic.mp3</gramophone>
+|}
+'''VALIS''' released the single Mukyu Platonic <playbutton title="Mukyu Platonic">Mukyu Platonic.mp3</playbutton> in 2023. The button in this sentence and the player in the infobox play the same file.
+
+== Mukyu Platonic ==
+<gramophone>
+{
+  "playlist": [
+    {
+      "audioFileUrl": "Mukyu Platonic.mp3",
+      "title": "Mukyu Platonic",
+      "artist": "VALIS",
+      "album": "Mukyu Platonic - Single",
+      "coverImageUrl": "Mukyu Platonic cover.jpg",
+      "navigationUrl": "https://music.apple.com/us/album/mukyu-platonic/1678711097?i=1678711098"
+    }
+  ]
+}
+</gramophone>
+
+== Links ==
+* [https://music.apple.com/us/album/mukyu-platonic/1678711097?i=1678711098 Mukyu Platonic on Apple Music]

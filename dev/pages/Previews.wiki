@@ -1,0 +1,28 @@
+The buttons on this page play the 30-second previews from other places than the wiki's own file pages. The page has play buttons only, no players.
+
+Today's pick: Ripple <playbutton title="Ripple" hidemissing="yes">http://127.0.0.1:8144/media/Ripple.mp3</playbutton>
+
+== Mirror ==
+The mirror at <code>http://127.0.0.1:8144/media/</code> keeps a copy of the songs. The wiki may ask the mirror whether a file exists before anyone presses play, so a button with <code>hidemissing="yes"</code> disappears when the mirror does not have its file.
+
+<tabber>
+|-|Galaxy Triangle=
+{| class="wikitable"
+! # !! Song !! Preview
+|-
+| 4 || Ripple || <playbutton title="Ripple" hidemissing="yes">http://127.0.0.1:8144/media/Ripple.mp3</playbutton>
+|-
+| 7 || E Div. || <playbutton title="E Div." hidemissing="yes">http://127.0.0.1:8144/media/E%20Div..mp3</playbutton>
+|}
+The mirror calls the last song <code>E Div.mp3</code>. The button for E Div. adds <code>.mp3</code> to the title instead, so the mirror has no such file and the button stays hidden.
+|-|Singles=
+Mukyu Platonic by VALIS <playbutton title="Mukyu Platonic" hidemissing="yes">http://127.0.0.1:8144/media/Mukyu%20Platonic.mp3</playbutton>
+</tabber>
+
+== Another site ==
+This site does not let the wiki read its files (no CORS), so the wiki never asks it about a file before you press play and the button always shows. The song still plays.
+
+Galactic Love <playbutton title="Galactic Love" hidemissing="yes">http://127.0.0.1:8145/media/Galactic%20Love.mp3</playbutton>
+
+== Special:FilePath ==
+A link through [[Special:FilePath]] plays the wiki's own file: Driven Star With You <playbutton title="Driven Star With You">/wiki/Special:FilePath/Driven_Star_With_You.mp3</playbutton>

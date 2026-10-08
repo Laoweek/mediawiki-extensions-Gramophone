@@ -1,0 +1,213 @@
+/* Compact inline button (<sm2>). The host box size is set in ext.gramophone.styles.css. */
+:host {
+	display: inline-block;
+	position: relative;
+	width: var(--gramophone-button-size, 1.75rem);
+	height: var(--gramophone-button-size, 1.75rem);
+	line-height: 0;
+	vertical-align: middle;
+	--fill: var(--gramophone-button-background, var(--primary-soft));
+	--glyph: var(--gramophone-button-foreground, var(--primary));
+	--ring-bg: var(--track);
+	--fill-error: #fdeaea;
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+	:host {
+		/* Opaque discs stay legible on coloured table cells in both themes. */
+		--fill-hover: color-mix(in srgb, var(--primary) 18%, var(--bg));
+		--fill-error: color-mix(in srgb, var(--destructive) 14%, var(--bg));
+	}
+}
+
+.b {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--glyph);
+	font: inherit;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Inner disc, inset so the progress ring sits around it. */
+.disc {
+	position: absolute;
+	inset: 14%;
+	border-radius: 50%;
+	background: var(--fill);
+	transition: background-color 0.15s, transform 0.12s;
+}
+
+.b:hover .disc {
+	background: var(--fill-hover, var(--fill));
+}
+
+.b:active .disc {
+	transform: scale(0.92);
+}
+
+.b:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 1px;
+}
+
+.b .icon {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 44%;
+	height: 44%;
+	fill: currentColor;
+	transform: translate(-50%, -50%);
+}
+
+.ring {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	transform: rotate(-90deg);
+	pointer-events: none;
+}
+
+.ring circle {
+	fill: none;
+	stroke-width: 2.5;
+}
+
+.ring-bg {
+	stroke: var(--ring-bg);
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.ring-fg {
+	stroke: var(--range);
+	stroke-linecap: round;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.b.active .ring-bg,
+.b.active .ring-fg,
+.b.loading .ring-fg {
+	opacity: 1;
+}
+
+.b.playing {
+	color: var(--primary-fg);
+}
+
+.b.playing .disc {
+	background: var(--primary);
+}
+
+.b.playing:hover .disc {
+	background: var(--primary-hover);
+}
+
+/* Custom colours from the wikitext: the disc keeps its colour in every state. */
+.b.custom.playing {
+	color: var(--glyph);
+}
+
+.b.custom .disc,
+.b.custom.playing .disc,
+.b.custom.playing:hover .disc {
+	background: var(--fill);
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+	.b.custom:hover .disc,
+	.b.custom.playing:hover .disc {
+		background: color-mix(in srgb, var(--fill) 86%, var(--glyph));
+	}
+}
+
+/* Buffering: the ring turns into a spinning arc. */
+.b.loading .ring {
+	animation: gramophone-ring-spin 0.9s linear infinite;
+}
+
+.b.loading .ring-fg {
+	stroke-dashoffset: 69.5;
+}
+
+@keyframes gramophone-ring-spin {
+	from {
+		transform: rotate(-90deg);
+	}
+
+	to {
+		transform: rotate(270deg);
+	}
+}
+
+.b.error {
+	color: var(--destructive);
+}
+
+.b.error .disc {
+	background: var(--fill-error);
+}
+
+.b.error .icon {
+	fill: none;
+	width: 52%;
+	height: 52%;
+}
+
+.b[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+
+.count {
+	position: absolute;
+	top: -0.25rem;
+	right: -0.3125rem;
+	min-width: 0.875rem;
+	height: 0.875rem;
+	padding: 0 0.1875rem;
+	border-radius: 9999px;
+	background: var(--fg);
+	color: var(--bg);
+	box-shadow: 0 0 0 1.5px var(--bg);
+	font-size: 0.5625rem;
+	font-weight: 700;
+	line-height: 0.875rem;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+	pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.b.loading .ring {
+		animation-duration: 1.8s;
+	}
+
+	.disc,
+	.ring-bg,
+	.ring-fg {
+		transition: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.b {
+		border: 1px solid ButtonText;
+	}
+
+	.ring-fg {
+		stroke: Highlight;
+	}
+}

@@ -1,0 +1,73 @@
+# Local MediaWiki 1.43 test wiki for the Gramophone extension.
+# Start it with ./setup.sh (see README.md).
+name: gramophone-dev
+
+services:
+  mediawiki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gramophone-dev-mediawiki:1.43-php8.4
+    container_name: gramophone-dev-mediawiki
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${GRAMOPHONE_DEV_WIKI_PORT:-8143}:80"
+    environment:
+      # LocalSettings.php lives in dev/config and loads the installer output from the data volume.
+      MW_CONFIG_FILE: /dev-config/LocalSettings.php
+      GRAMOPHONE_DEV_SERVER: "http://localhost:${GRAMOPHONE_DEV_WIKI_PORT:-8143}"
+      GRAMOPHONE_DEV_UPLOADS: "http://localhost:${GRAMOPHONE_DEV_UPLOADS_PORT:-8144}"
+    volumes:
+      # The extension under test (the repository root), live and read-only.
+      - type: bind
+        source: ${GRAMOPHONE_SRC:-..}
+        target: /var/www/html/extensions/Gramophone
+        read_only: true
+        bind:
+          create_host_path: false
+      - ./config:/dev-config:ro
+      - ./extensions/MobileFrontend:/var/www/html/extensions/MobileFrontend:ro
+      - ./extensions/TabberNeue:/var/www/html/extensions/TabberNeue:ro
+      - ./skins/Citizen:/var/www/html/skins/Citizen:ro
+      # The pages setup.sh saves and the media it imports from /media/wiki (made by media.mjs).
+      # The parent folder is mounted, so a deleted and recreated media/wiki is still seen.
+      - ./pages:/pages:ro
+      - ./media:/media:ro
+      - data:/var/www/data
+      - images:/var/www/html/images
+
+  # Second origin for uploads, like an upload CDN:
+  #   :8144 /images/   the wiki upload directory, with Access-Control-Allow-Origin for the wiki origin
+  #   :8144 /media/    dev/media/wiki (songs, covers, lyrics) as a mirror on another site, same CORS header
+  #   :8145 /media/    the same files from a "third-party" host that sends no CORS headers
+  # The pages reach /media/ as http://127.0.0.1:PORT, because the extension treats
+  # localhost on any port as the wiki's own host.
+  uploads:
+    image: nginx:1.29-alpine
+    container_name: gramophone-dev-uploads
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${GRAMOPHONE_DEV_UPLOADS_PORT:-8144}:8144"
+      - "127.0.0.1:${GRAMOPHONE_DEV_NOCORS_PORT:-8145}:8145"
+    environment:
+      GRAMOPHONE_DEV_SERVER: "http://localhost:${GRAMOPHONE_DEV_WIKI_PORT:-8143}"
+    volumes:
+      - images:/srv/images:ro
+      - ./media:/srv/media:ro
+      - ./nginx/templates:/etc/nginx/templates:ro
+
+  # One-off tool container: `docker compose run --rm ffmpeg ARGS` runs ffmpeg on dev/media
+  # (used by media.mjs to convert the downloaded previews to MP3).
+  ffmpeg:
+    profiles: [tools]
+    build:
+      context: .
+      dockerfile: Dockerfile.ffmpeg
+    image: gramophone-dev-ffmpeg
+    volumes:
+      - ./media:/media
+    entrypoint: ["ffmpeg"]
+
+volumes:
+  data:
+  images:

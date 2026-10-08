@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gramophone contributors"
+		]
+	},
+	"gramophone-desc": "Description of the extension, shown on [[Special:Version]]. Keep the tag names gramophone, playbutton, flashmp3, sm2, modernsoundmanager and ab and the extension names Sm2Shim, FlashMP3 and AudioButton as they are. Do not use angle brackets, because the text is parsed as wikitext.",
+	"gramophone-error": "Inline error shown in place of an audio player whose content is invalid.\n\nParameters:\n* $1 - the specific problem, one of {{msg-mw|gramophone-unknown}}, {{msg-mw|gramophone-invalidJson}}, {{msg-mw|gramophone-playlistRequired}} or {{msg-mw|gramophone-too-many-tracks}}",
+	"gramophone-unknown": "Used as $1 in {{msg-mw|gramophone-error}} when the player could not be built for an unexpected reason.",
+	"gramophone-invalidJson": "Used as $1 in {{msg-mw|gramophone-error}} when the tag content is not a JSON object.",
+	"gramophone-playlistRequired": "Used as $1 in {{msg-mw|gramophone-error}} when the JSON has no \"playlist\" array, or no entry of it has a non-empty \"audioFileUrl\" text. Do not translate \"playlist\" and \"audioFileUrl\", they are property names.",
+	"gramophone-too-many-tracks": "Used as $1 in {{msg-mw|gramophone-error}} when the audio player tags on a page have more tracks together than allowed. The tag that would go over the limit shows this error instead of a player.\n\nParameters:\n* $1 - the most tracks the players on one page can have, a formatted number",
+	"gramophone-tracking-category": "Name of the tracking category for pages that use one of the audio player tags.",
+	"gramophone-tracking-category-desc": "Description of the tracking category {{msg-mw|gramophone-tracking-category}} on [[Special:TrackingCategories]]. The category also collects pages where one of the tags shows {{msg-mw|gramophone-error}} instead of a player.",
+	"gramophone-missing-file-category": "Name of the tracking category for pages where an audio player refers to a wiki file that does not exist, or to an audio, cover or lyrics address that cannot be used: one that is not a valid http(s) URL or file name, or that the wiki's settings do not allow.",
+	"gramophone-missing-file-category-desc": "Description of the tracking category {{msg-mw|gramophone-missing-file-category}} on [[Special:TrackingCategories]].",
+	"gramophone-play": "Accessible label and tooltip of the play button.\n{{Identical|Play}}",
+	"gramophone-pause": "Accessible label and tooltip of the pause button.\n{{Identical|Pause}}",
+	"gramophone-previous": "Accessible label and tooltip of the button that goes to the previous track in the playlist.",
+	"gramophone-next": "Accessible label and tooltip of the button that goes to the next track in the playlist.",
+	"gramophone-seek": "Accessible label of the slider that shows and changes the playback position.",
+	"gramophone-volume": "Accessible label of the volume slider.\n{{Identical|Volume}}",
+	"gramophone-mute": "Accessible label and tooltip of the button that mutes the sound.",
+	"gramophone-unmute": "Accessible label and tooltip of the button that turns the sound back on.",
+	"gramophone-repeat-off": "Label of the repeat button when repeat is off. Pressing it switches to {{msg-mw|gramophone-repeat-all}}.",
+	"gramophone-repeat-all": "Label of the repeat button when the whole playlist repeats. Pressing it switches to {{msg-mw|gramophone-repeat-one}}.",
+	"gramophone-repeat-one": "Label of the repeat button when the current track repeats. Pressing it switches to {{msg-mw|gramophone-repeat-off}}.",
+	"gramophone-playlist": "Label of the button that shows or hides the playlist, and accessible name of the playlist.\n{{Identical|Playlist}}",
+	"gramophone-lyrics": "Label of the button that shows or hides the synced lyrics, and accessible name of the lyrics panel.\n{{Identical|Lyrics}}",
+	"gramophone-lyrics-loading": "Shown in the lyrics panel while the lyrics file is downloading.",
+	"gramophone-lyrics-error": "Shown in the lyrics panel when the lyrics file could not be downloaded or read.",
+	"gramophone-download": "Label of the link that downloads the audio file.\n{{Identical|Download}}",
+	"gramophone-open-file-page": "Label of the link to the wiki file description page of the current track, or to the page given by the editor.",
+	"gramophone-speed": "Accessible label of the control that changes the playback speed.",
+	"gramophone-loading": "Shown while the audio is buffering.\n{{Identical|Loading}}",
+	"gramophone-load-error": "Shown when the browser could not load or decode the audio.",
+	"gramophone-missing-file": "Shown for a track whose wiki file does not exist. The track links to the upload form.",
+	"gramophone-autoplay-blocked": "Shown when the player was set to start on its own but the browser did not allow it.",
+	"gramophone-explicit": "Badge on a track marked as having explicit content, like the \"E\" badge in music apps.",
+	"gramophone-unknown-title": "Shown instead of the track title when none is known.",
+	"gramophone-track-of": "Position of the current track in the playlist.\n\nParameters:\n* $1 - number of the current track, starting at 1\n* $2 - number of tracks in the playlist",
+	"gramophone-now-playing": "Accessible label of the area that shows the current track title and artist."
+}

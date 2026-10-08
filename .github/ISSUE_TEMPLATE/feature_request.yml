@@ -1,0 +1,16 @@
+name: Feature request
+description: Something your wiki needs from the player
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do your readers or editors need?
+      description: Describe the page and the situation, not only the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: A link to a page on your wiki, or the wikitext you would like to write.

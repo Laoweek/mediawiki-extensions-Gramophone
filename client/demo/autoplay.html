@@ -1,0 +1,185 @@
+<!doctype html>
+<html class="client-js" lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoplay - Gramophone demo</title>
+<link rel="stylesheet" href="/resources/ext.gramophone.styles.css">
+<style>
+html { background: #f6f6f6; }
+body { margin: 0; font-family: sans-serif; color: #202122; background: #f6f6f6; }
+#mw-page-base { height: 5em; background: linear-gradient(#fff 50%, #f6f6f6 100%); }
+#mw-head { position: absolute; top: 0; right: 0; left: 11em; height: 2.5em; margin-top: 2.5em; display: flex; justify-content: space-between; font-size: 0.8125em; }
+#mw-head .tabs { display: flex; gap: 0; }
+#mw-head .tabs a { display: block; padding: 0.6em 0.8em; color: #0645ad; text-decoration: none; background: linear-gradient(to top, #77c1f6 0, #e8f2f8 1px, #fff 100%); border-left: 1px solid #a7d7f9; }
+#mw-head .tabs a.selected { background: #fff; color: #202122; }
+#mw-panel { position: absolute; top: 0; left: 0; width: 10em; padding: 1em 0.5em; font-size: 0.75em; }
+#p-logo { width: 9em; height: 9em; margin-bottom: 1em; border-radius: 8px; background: linear-gradient(135deg, #3a7194, #98c5e9); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
+#mw-panel a { display: block; padding: 0.25em 0; color: #0645ad; text-decoration: none; }
+.mw-body { margin-left: 11em; margin-top: -1px; padding: 1.25em 1.5em 1.5em; background: #fff; border: 1px solid #a7d7f9; border-right: 0; color: #202122; }
+h1.firstHeading { margin: 0 0 0.25em; font-family: 'Linux Libertine', Georgia, Times, serif; font-weight: normal; font-size: 1.8em; border-bottom: 1px solid #a2a9b1; line-height: 1.3; }
+.mw-body-content { font-size: 0.875em; line-height: 1.6; }
+.mw-body-content h2 { font-family: 'Linux Libertine', Georgia, Times, serif; font-weight: normal; font-size: 1.5em; border-bottom: 1px solid #a2a9b1; margin: 1em 0 0.25em; }
+.mw-body-content h3 { font-size: 1.2em; margin: 0.3em 0 0; }
+a { color: #0645ad; } a.new { color: #ba0000; }
+table.wikitable { background: #f8f9fa; color: #202122; margin: 1em 0; border: 1px solid #a2a9b1; border-collapse: collapse; }
+table.wikitable > tr > th, table.wikitable > * > tr > th, table.wikitable > * > tr > td { border: 1px solid #a2a9b1; padding: 0.2em 0.4em; }
+table.wikitable th { background: #eaecf0; text-align: center; }
+table.wikitable td.preview { text-align: center; }
+table.songs { width: 100%; max-width: 640px; }
+.infobox { float: right; clear: right; width: 300px; margin: 0 0 1em 1em; padding: 0.5em; border: 1px solid #a2a9b1; background: #f8f9fa; font-size: 0.9em; }
+.infobox .cap { font-weight: bold; font-size: 1.15em; text-align: center; margin-bottom: 0.4em; }
+.infobox-data { width: 100%; margin-top: 0.5em; border-collapse: collapse; }
+.infobox-data th { width: 6em; padding: 0.1em 0.5em 0.1em 0; text-align: left; vertical-align: top; }
+#footer { margin-left: 11em; padding: 0.75em 1.5em; color: #54595d; font-size: 0.75em; }
+.demo-note { color: #54595d; font-size: 0.9em; }
+/* Site styles for the showcase (#demo-styles), as README.md shows them for MediaWiki:Common.css. */
+#demo-styles { max-width: 40rem; }
+#demo-styles .style-caption { margin: 1em 0 0.4em; font-weight: bold; }
+.ext-gramophone.square {
+	--gramophone-radius: 0px;
+	--gramophone-shadow: none;
+	--gramophone-font-family: Georgia, serif;
+}
+.ext-gramophone.square::part(play-button) {
+	border-radius: 0;
+}
+.ext-gramophone.compact::part(cover),
+.ext-gramophone.compact::part(download-button),
+.ext-gramophone.compact::part(file-page-button),
+.ext-gramophone.compact::part(speed-button) {
+	display: none;
+}
+.ext-gramophone.compact::part(bar) {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas: "meta" "ctrl";
+}
+/* Site theme for #demo-themed, as a wiki would write it in MediaWiki:Common.css (README, Theming). */
+.gramophone-theme-demo { --gramophone-radius: 0px; --gramophone-shadow: none; --gramophone-font-family: Georgia, serif; --gramophone-cover-size: 7.5rem; --gramophone-row-height: 3rem; }
+.gramophone-theme-demo[data-gramophone-layout="card"]::part(play-button), .gramophone-theme-demo::part(seek-thumb) { border-radius: 0; }
+.gramophone-theme-demo::part(download-button) { display: none; }
+.gramophone-theme-demo::part(playlist-item current) { box-shadow: inset 3px 0 var(--gramophone-primary); }
+.gramophone-theme-demo[data-gramophone-state="playing"]::part(card) { border-color: var(--gramophone-primary); }
+.gramophone-theme-demo::part(disc) { background: var(--gramophone-primary); }
+.gramophone-theme-demo[data-gramophone-layout="button"]::part(button) { color: #fff; }
+/* Night theme stand-in (legacy Vector has none; Vector 2022 / Minerva do). */
+html.skin-theme-clientpref-night, html.skin-theme-clientpref-night body { background: #101418; }
+html.skin-theme-clientpref-night .mw-body { background: #101418; color: #eaecf0; border-color: #3a3f47; }
+html.skin-theme-clientpref-night #mw-page-base { background: #101418; }
+html.skin-theme-clientpref-night h1.firstHeading, html.skin-theme-clientpref-night .mw-body-content h2 { border-color: #54595d; color: #eaecf0; }
+html.skin-theme-clientpref-night a { color: #88a3e8; }
+html.skin-theme-clientpref-night table.wikitable { background: #202122; color: #eaecf0; border-color: #54595d; }
+html.skin-theme-clientpref-night table.wikitable th { background: #27292d; }
+html.skin-theme-clientpref-night table.wikitable td, html.skin-theme-clientpref-night table.wikitable th { border-color: #54595d; }
+html.skin-theme-clientpref-night .infobox { background: #202122; border-color: #54595d; }
+html.skin-theme-clientpref-night #footer, html.skin-theme-clientpref-night .demo-note { color: #a2a9b1; }
+@media (max-width: 720px) {
+	#mw-panel, #mw-head { display: none; }
+	.mw-body { margin-left: 0; border-left: 0; padding: 1em; }
+	#footer { margin-left: 0; padding: 0.75em 1em; }
+	.infobox { float: none; width: auto; margin: 1em 0; }
+}
+</style>
+<script>
+window.mw = (function () {
+	var messages = {"gramophone-play":"Play","gramophone-pause":"Pause","gramophone-load-error":"This audio could not be played.","gramophone-missing-file":"This file does not exist.","gramophone-unknown-title":"Unknown title","gramophone-track-of":"Track $1 of $2","gramophone-previous":"Previous track","gramophone-next":"Next track","gramophone-seek":"Playback position","gramophone-volume":"Volume","gramophone-mute":"Mute","gramophone-unmute":"Unmute","gramophone-repeat-off":"Repeat off","gramophone-repeat-all":"Repeat all","gramophone-repeat-one":"Repeat one","gramophone-playlist":"Playlist","gramophone-lyrics":"Lyrics","gramophone-lyrics-loading":"Loading lyrics…","gramophone-lyrics-error":"The lyrics could not be loaded.","gramophone-download":"Download","gramophone-open-file-page":"Open file page","gramophone-speed":"Playback speed","gramophone-loading":"Loading…","gramophone-autoplay-blocked":"Your browser blocked autoplay. Press play to listen.","gramophone-explicit":"Explicit","gramophone-now-playing":"Now playing"};
+	var hooks = {};
+	return {
+		messages: messages,
+		message: function (key) {
+			var params = Array.prototype.slice.call(arguments, 1);
+			return {
+				exists: function () { return Object.prototype.hasOwnProperty.call(messages, key); },
+				text: function () { return String(messages[key]).replace(/\$(\d)/g, function (m, n) { return params[n - 1] !== undefined ? params[n - 1] : m; }); }
+			};
+		},
+		hook: function (name) {
+			var h = hooks[name] || (hooks[name] = { fns: [], memory: null });
+			return {
+				add: function (fn) { h.fns.push(fn); if (h.memory) fn.apply(null, h.memory); return this; },
+				fire: function () { h.memory = arguments; for (var i = 0; i < h.fns.length; i++) h.fns[i].apply(null, arguments); return this; }
+			};
+		},
+		// ResourceLoader stand-in: runs a module's file as function (require, module, exports)
+		// after its dependencies, and resolves using() with require, as mw.loader does.
+		loader: (function () {
+			var rl = new URLSearchParams(location.search).get('bundle') === 'rl';
+			var files = {
+				'ext.gramophone': rl ? '/client/demo/build/gramophone.rl.js' : '/resources/dist/gramophone.js',
+				'ext.gramophone.player': rl ? '/client/demo/build/gramophone.player.rl.js' : '/resources/dist/gramophone.player.js'
+			};
+			var deps = { 'ext.gramophone.player': ['ext.gramophone'] };
+			var modules = {};
+			function require(name) {
+				var m = modules[name];
+				if (!m || !m.ready) throw new Error('Module "' + name + '" is not loaded');
+				return m.module.exports;
+			}
+			function implement(name, code) {
+				var m = modules[name] || (modules[name] = {});
+				m.module = { exports: {} };
+				new Function('require', 'module', 'exports', code + '\n//# sourceURL=' + files[name])(require, m.module, m.module.exports);
+				m.ready = true;
+			}
+			function load(name) {
+				var m = modules[name] || (modules[name] = {});
+				if (!m.promise) {
+					m.promise = Promise.all((deps[name] || []).map(load)).then(function () {
+						if (m.ready) return;
+						return fetch(files[name]).then(function (r) { return r.text(); }).then(function (code) {
+							if (!m.ready) implement(name, code);
+						});
+					});
+				}
+				return m.promise;
+			}
+			return {
+				using: function (names) {
+					return Promise.all([].concat(names).map(load)).then(function () { return require; });
+				},
+				require: require,
+				implement: implement
+			};
+		}()),
+		log: { error: function () { console.error.apply(console, arguments); } }
+	};
+}());</script>
+<script>
+(function () {
+	var q = new URLSearchParams(location.search);
+	var html = document.documentElement;
+	var theme = q.get('theme');
+	if (theme) html.classList.add('skin-theme-clientpref-' + theme);
+	if (q.has('nojs')) { html.className = html.className.replace('client-js', 'client-nojs'); return; }
+	if (q.get('bundle') === 'rl') document.querySelector('link[href$="ext.gramophone.styles.css"]').href = '/client/demo/build/ext.gramophone.styles.rl.css';
+	// Like a page whose HTML asks for ext.gramophone only: ext.gramophone loads ext.gramophone.player for the players.
+	function load() {
+		mw.loader.using('ext.gramophone').then(function () {
+			var content = document.getElementById('mw-content-text');
+			mw.hook('wikipage.content').fire({ get: function () { return [content]; } });
+			window.gramophoneLoaded = true;
+		});
+	}
+	var delay = Number(q.get('delay') || 0);
+	if (q.has('hold')) window.gramophoneLoad = load;
+	else if (delay) setTimeout(load, delay);
+	else document.addEventListener('DOMContentLoaded', load);
+}());</script>
+</head>
+<body>
+<div id="mw-page-base"></div>
+<div id="mw-panel"><div id="p-logo">Gramophone demo</div><a href="#">Main page</a><a href="#">Recent changes</a><a href="#">Random page</a><a href="#">Help</a></div>
+<div id="mw-head"><div class="tabs"><a class="selected" href="#">Page</a><a href="#">Discussion</a></div><div class="tabs"><a class="selected" href="#">Read</a><a href="#">Edit</a><a href="#">View history</a></div></div>
+<div class="mw-body" id="content">
+<h1 class="firstHeading">Autoplay</h1>
+<div id="bodyContent" class="mw-body-content"><div id="mw-content-text"><div class="mw-parser-output">
+
+<p class="demo-note">Test page for autoplay: when the browser blocks it, the player asks for a press on play.</p>
+<div id="demo-autoplay"><div class="ext-gramophone ext-gramophone-player" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;player&quot;,&quot;autoPlay&quot;:true,&quot;tracks&quot;:[{&quot;src&quot;:&quot;/client/demo/media/mukyu-platonic.m4a&quot;,&quot;title&quot;:&quot;Mukyu Platonic&quot;,&quot;artist&quot;:&quot;VALIS&quot;,&quot;album&quot;:&quot;Mukyu Platonic - Single&quot;,&quot;cover&quot;:&quot;/client/demo/media/mukyu-platonic.jpg&quot;,&quot;link&quot;:&quot;https://music.apple.com/us/album/mukyu-platonic/1678711097?i=1678711098&quot;,&quot;nofollow&quot;:true}]}"><ol class="ext-gramophone-fallback"><li><a class="ext-gramophone-fallback-link" href="/client/demo/media/mukyu-platonic.m4a" title="Mukyu Platonic">Mukyu Platonic</a></li></ol></div></div>
+<p><span class="ext-gramophone ext-gramophone-button" data-mw-gramophone="{&quot;v&quot;:2,&quot;mode&quot;:&quot;button&quot;,&quot;tracks&quot;:[{&quot;src&quot;:&quot;/client/demo/media/galactic-love.m4a&quot;,&quot;title&quot;:&quot;Galactic Love&quot;,&quot;artist&quot;:&quot;La prière&quot;,&quot;album&quot;:&quot;Galaxy Triangle&quot;,&quot;cover&quot;:&quot;/client/demo/media/galaxy-triangle.jpg&quot;,&quot;link&quot;:&quot;https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726680&quot;,&quot;nofollow&quot;:true}]}"><a class="ext-gramophone-fallback-link" href="/client/demo/media/galactic-love.m4a" title="Galactic Love">Galactic Love</a></span> Another button on the page.</p>
+
+</div></div></div>
+</div>
+<div id="footer"><p id="demo-credits">Music: &quot;Galaxy Triangle&quot; by La prière, &quot;Bubblin'&quot; by HIMEHINA and &quot;Mukyu Platonic&quot; by VALIS. 30-second previews and cover art from Apple Music, owned by the artists and their labels.</p></div>
+</body>
+</html>

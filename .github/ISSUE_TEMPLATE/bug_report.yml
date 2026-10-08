@@ -1,0 +1,31 @@
+name: Bug report
+description: A player or tag does not behave as the README says
+labels: [bug]
+body:
+  - type: textarea
+    id: wikitext
+    attributes:
+      label: Wikitext
+      description: The smallest wikitext that shows the problem.
+      render: wikitext
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens and what you expected
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Extension commit (Special:Version shows it), MediaWiki version, skin, browser
+      placeholder: Gramophone a1b2c3d, MediaWiki 1.43.9, Vector 2022, Firefox 140
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console errors
+      description: Open the developer tools console and paste any red lines.

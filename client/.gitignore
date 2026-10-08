@@ -1,0 +1,6 @@
+node_modules/
+demo/screenshots/
+# Output of scripts/rl-minify.sh, not committed
+demo/build/
+# Song previews and cover art from scripts/demo-media.mjs (pnpm media), never committed
+demo/media/

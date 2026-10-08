@@ -1,0 +1,12 @@
+{
+  "name": "gramophone-dev",
+  "private": true,
+  "description": "Local MediaWiki test environment for the Gramophone extension",
+  "type": "module",
+  "scripts": {
+    "check": "node check.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
+  }
+}

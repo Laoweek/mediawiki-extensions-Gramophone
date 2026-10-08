@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP (MediaWiki ${{ matrix.mediawiki }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The LTS and every supported release (mediawiki.org/wiki/Version_lifecycle).
+        mediawiki: ['1.43', '1.45', '1.46']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Parser tests, PHPUnit, phpcs, extension.json
+        run: scripts/php-test.sh
+        env:
+          GRAMOPHONE_PHP_IMAGE: mediawiki:${{ matrix.mediawiki }}
+
+  client:
+    name: Player bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          package_json_file: client/package.json
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: client/package.json
+          cache: pnpm
+          cache-dependency-path: client/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Type check, unit tests, build, bundle check
+        run: pnpm check
+      - name: Demo pages
+        run: pnpm demo
+      - name: Committed build output matches the source
+        run: |
+          changes=$(git status --porcelain --untracked-files=all)
+          if [ -n "$changes" ]; then
+            echo "::error::The build changed or added files. Run pnpm check and pnpm demo in client/ and commit the result."
+            echo "$changes"
+            git diff --stat
+            exit 1
+          fi

@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gramophone contributors"
+		]
+	},
+	"gramophone-desc": "A modern audio player for wiki pages. The gramophone and playbutton tags play HTML5 audio with playlists and synced lyrics. For compatibility it also renders the flashmp3, sm2 and modernsoundmanager tags of Sm2Shim and FlashMP3, and optionally the ab tag of AudioButton.",
+	"gramophone-error": "Audio player error: $1",
+	"gramophone-unknown": "An unknown error occurred.",
+	"gramophone-invalidJson": "The playlist is not a valid JSON object.",
+	"gramophone-playlistRequired": "No playlist was given. Add a \"playlist\" list with at least one entry that has an \"audioFileUrl\".",
+	"gramophone-too-many-tracks": "This page has too many audio tracks. The players on one page can have at most $1 {{PLURAL:$1|track|tracks}} together.",
+	"gramophone-tracking-category": "Pages with audio players",
+	"gramophone-tracking-category-desc": "The page contains an audio player made with the <code>&lt;gramophone&gt;</code>, <code>&lt;playbutton&gt;</code>, <code>&lt;flashmp3&gt;</code>, <code>&lt;sm2&gt;</code> or <code>&lt;modernsoundmanager&gt;</code> tag, or one of these tags shows an error instead of a player.",
+	"gramophone-missing-file-category": "Pages with missing audio player files",
+	"gramophone-missing-file-category-desc": "An audio player on the page refers to a file that does not exist or to an address that cannot be used.",
+	"gramophone-play": "Play",
+	"gramophone-pause": "Pause",
+	"gramophone-previous": "Previous track",
+	"gramophone-next": "Next track",
+	"gramophone-seek": "Playback position",
+	"gramophone-volume": "Volume",
+	"gramophone-mute": "Mute",
+	"gramophone-unmute": "Unmute",
+	"gramophone-repeat-off": "Repeat off",
+	"gramophone-repeat-all": "Repeat all",
+	"gramophone-repeat-one": "Repeat one",
+	"gramophone-playlist": "Playlist",
+	"gramophone-lyrics": "Lyrics",
+	"gramophone-lyrics-loading": "Loading lyrics…",
+	"gramophone-lyrics-error": "The lyrics could not be loaded.",
+	"gramophone-download": "Download",
+	"gramophone-open-file-page": "Open file page",
+	"gramophone-speed": "Playback speed",
+	"gramophone-loading": "Loading…",
+	"gramophone-load-error": "This audio could not be played.",
+	"gramophone-missing-file": "This file does not exist.",
+	"gramophone-autoplay-blocked": "Your browser blocked autoplay. Press play to listen.",
+	"gramophone-explicit": "Explicit",
+	"gramophone-unknown-title": "Unknown title",
+	"gramophone-track-of": "Track $1 of $2",
+	"gramophone-now-playing": "Now playing"
+}

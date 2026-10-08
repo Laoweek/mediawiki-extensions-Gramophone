@@ -1,0 +1,16 @@
+# Left out of `git archive` release tarballs: a wiki needs only the extension and its documentation.
+/client export-ignore
+/dev export-ignore
+/docs/contract.md export-ignore
+/docs/screenshots export-ignore
+/scripts export-ignore
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/AGENTS.md export-ignore
+/CLAUDE.md export-ignore
+/CONTRIBUTING.md export-ignore
+
+# The committed bundle is generated. Hide it from diffs and language stats.
+/resources/dist/gramophone.js linguist-generated=true -diff
+/client/demo/*.html linguist-generated=true

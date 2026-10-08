@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+  - package-ecosystem: npm
+    directories: [/client, /dev]
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      dev-dependencies:
+        patterns: ['*']
+  # FROM lines in dev/Dockerfile and dev/Dockerfile.ffmpeg. The MediaWiki base
+  # image comes from a build ARG, which Dependabot does not follow.
+  - package-ecosystem: docker
+    directory: /dev
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    ignore:
+      # The dev wiki runs PHP 8.4 on purpose (see dev/Dockerfile). Moving to
+      # another PHP release is a deliberate change, not a routine update.
+      - dependency-name: php
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+  # Images in dev/compose.yaml.
+  - package-ecosystem: docker-compose
+    directory: /dev
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    ignore:
+      # Built locally from dev/Dockerfile, not pulled from a registry.
+      - dependency-name: gramophone-dev-mediawiki

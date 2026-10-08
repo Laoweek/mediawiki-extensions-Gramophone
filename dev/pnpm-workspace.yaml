@@ -1,0 +1,6 @@
+# Supply-chain hardening, the same as client/pnpm-workspace.yaml. Install only
+# versions published at least 7 days ago (pnpm counts minutes), and refuse a
+# version published with weaker trust evidence (trusted publisher, provenance)
+# than an earlier release.
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade

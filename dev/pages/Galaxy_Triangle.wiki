@@ -1,0 +1,67 @@
+{| class="wikitable infobox"
+! colspan="2" class="infobox-title" | Galaxy Triangle
+|-
+| colspan="2" class="infobox-image" | [[File:Galaxy Triangle cover.jpg|240px|Cover of Galaxy Triangle]]
+|-
+! Artist
+| La prière
+|-
+! Released
+| 2020
+|-
+! Songs
+| 7
+|-
+! Listen
+| [https://music.apple.com/us/album/galaxy-triangle/1550726371 Apple Music]
+|}
+'''Galaxy Triangle''' is a 2020 album by La prière with seven songs. The players on this wiki play the 30-second previews from Apple Music.
+
+== Listen ==
+<gramophone>
+{
+  "isPlaylistOpen": true,
+  "playlist": [
+    { "audioFileUrl": "Div.A3.mp3", "title": "Div.A3", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726374" },
+    { "audioFileUrl": "Diva of the Battlefield.mp3", "title": "Diva of the Battlefield", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726375" },
+    { "audioFileUrl": "Testament of the Twin Stars.mp3", "title": "Testament of the Twin Stars", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726676" },
+    { "audioFileUrl": "Ripple.mp3", "title": "Ripple", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726677" },
+    { "audioFileUrl": "Driven Star With You.mp3", "title": "Driven Star With You", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726679" },
+    { "audioFileUrl": "Galactic Love.mp3", "title": "Galactic Love", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726680" },
+    { "audioFileUrl": "E Div.mp3", "title": "E Div.", "artist": "La prière", "album": "Galaxy Triangle", "coverImageUrl": "Galaxy Triangle cover.jpg", "navigationUrl": "https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726681" }
+  ]
+}
+</gramophone>
+
+== Track list ==
+{| class="wikitable"
+! # !! Title !! Preview !! Listen
+{{Track|n=1|title=Div.A3|file=Div.A3.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726374}}
+{{Track|n=2|title=Diva of the Battlefield|file=Diva of the Battlefield.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726375}}
+{{Track|n=3|title=Testament of the Twin Stars|file=Testament of the Twin Stars.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726676}}
+{{Track|n=4|title=Ripple|file=Ripple.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726677}}
+{{Track|n=5|title=Driven Star With You|file=Driven Star With You.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726679}}
+{{Track|n=6|title=Galactic Love|file=Galactic Love.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726680}}
+{{Track|n=7|title=E Div.|file=E Div.mp3|link=https://music.apple.com/us/album/galaxy-triangle/1550726371?i=1550726681}}
+|}
+
+== All previews ==
+One player per song, to compare them side by side.
+
+{| class="wikitable mw-collapsible mw-collapsed"
+! Title !! Preview
+|-
+| Div.A3 || <gramophone>Div.A3.mp3</gramophone>
+|-
+| Diva of the Battlefield || <gramophone>Diva of the Battlefield.mp3</gramophone>
+|-
+| Testament of the Twin Stars || <gramophone>Testament of the Twin Stars.mp3</gramophone>
+|-
+| Ripple || <gramophone>Ripple.mp3</gramophone>
+|-
+| Driven Star With You || <gramophone>Driven Star With You.mp3</gramophone>
+|-
+| Galactic Love || <gramophone>Galactic Love.mp3</gramophone>
+|-
+| E Div. || <gramophone>E Div.mp3</gramophone>
+|}

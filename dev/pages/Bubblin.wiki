@@ -1,0 +1,51 @@
+{| class="wikitable infobox"
+! colspan="2" class="infobox-title" | Bubblin'
+|-
+| colspan="2" class="infobox-image" | [[File:Bubblin cover.jpg|240px|Cover of Bubblin']]
+|-
+! Artist
+| HIMEHINA
+|-
+! Released
+| 2025
+|-
+! Listen
+| [https://music.apple.com/us/album/bubblin/1818284776?i=1818284945 Apple Music]
+|}
+'''Bubblin&#39;''' is a 2025 song by HIMEHINA.<ref>The players on this page play the 30-second preview from Apple Music: <playbutton title="Bubblin'">Bubblin.mp3</playbutton></ref>
+
+== Lyrics ==
+Press the microphone button in the player to show the lyrics. The current line lights up while the song plays, and a click on a line jumps there.
+
+<gramophone>
+{
+  "playlist": [
+    {
+      "audioFileUrl": "Bubblin.mp3",
+      "title": "Bubblin'",
+      "artist": "HIMEHINA",
+      "album": "Bubblin",
+      "coverImageUrl": "Bubblin cover.jpg",
+      "lrcFileUrl": "Bubblin.lrc",
+      "navigationUrl": "https://music.apple.com/us/album/bubblin/1818284776?i=1818284945"
+    }
+  ]
+}
+</gramophone>
+
+The lines in [[:File:Bubblin.lrc|Bubblin.lrc]] are not the song's lyrics. They were written for this wiki to explain the lyrics panel, with a Japanese translation under each line.
+
+== Lyrics from another site ==
+This player reads the same lyrics file from the mirror at <code>http://127.0.0.1:8144/media/</code>, a site that lets the wiki read its files (CORS). It comes from [[Template:Song]].
+
+{{Song
+| file = Bubblin.mp3
+| title = Bubblin'
+| artist = HIMEHINA
+| album = Bubblin
+| cover = Bubblin cover.jpg
+| lyrics = http://127.0.0.1:8144/media/Bubblin.lrc
+}}
+
+== Notes ==
+<references />

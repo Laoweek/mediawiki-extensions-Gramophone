@@ -1,0 +1,32 @@
+This page is written with the tags of Sm2Shim, FlashMP3 and AudioButton, as on a wiki that moved to Gramophone without editing its pages. Each section shows the old wikitext, then what it renders. The old tags give the same players and buttons as <code>&lt;gramophone&gt;</code> and <code>&lt;playbutton&gt;</code>.
+
+== flashmp3 ==
+<pre>
+<flashmp3>Ripple.mp3,Galactic Love.mp3|openplaylist=yes</flashmp3>
+</pre>
+<flashmp3>Ripple.mp3,Galactic Love.mp3|openplaylist=yes</flashmp3>
+
+== sm2 ==
+<pre>
+The album opens with Div.A3 <sm2>Div.A3.mp3</sm2> and ends with E Div. <sm2>E Div.mp3</sm2>
+</pre>
+The album opens with Div.A3 <sm2>Div.A3.mp3</sm2> and ends with E Div. <sm2>E Div.mp3</sm2>
+
+== modernsoundmanager ==
+<pre>
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Mukyu Platonic.mp3","title":"Mukyu Platonic","artist":"VALIS","coverImageUrl":"Mukyu Platonic cover.jpg"}]}</modernsoundmanager>
+</pre>
+<modernsoundmanager>{"playlist":[{"audioFileUrl":"Mukyu Platonic.mp3","title":"Mukyu Platonic","artist":"VALIS","coverImageUrl":"Mukyu Platonic cover.jpg"}]}</modernsoundmanager>
+
+== ab ==
+<pre>
+Bubblin' <ab>Bubblin.mp3</ab>
+</pre>
+Bubblin' <ab>Bubblin.mp3</ab>
+
+== Templates ==
+Old templates that build the tags with <code><nowiki>{{#tag:...}}</nowiki></code> keep working:
+<pre>
+{{#tag:sm2|Testament of the Twin Stars.mp3}} {{#tag:flashmp3|Driven Star With You.mp3}}
+</pre>
+{{#tag:sm2|Testament of the Twin Stars.mp3}} {{#tag:flashmp3|Driven Star With You.mp3}}

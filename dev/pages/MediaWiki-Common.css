@@ -1,0 +1,18 @@
+/* Infoboxes sit at the right of the text, and above it on narrow screens. */
+.infobox {
+	float: right;
+	clear: right;
+	width: 260px;
+	margin: 0 0 1em 1em;
+}
+.infobox-title,
+.infobox-image {
+	text-align: center;
+}
+@media ( max-width: 640px ) {
+	.infobox {
+		float: none;
+		width: 100%;
+		margin: 0 0 1em;
+	}
+}

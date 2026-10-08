@@ -1,0 +1,30 @@
+{
+  "name": "gramophone-client",
+  "private": true,
+  "description": "Client bundle for the Gramophone MediaWiki extension",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/unit.test.mjs",
+    "check": "tsc --noEmit && node --test test/unit.test.mjs && node build.mjs && node scripts/check-bundle.mjs && node scripts/check-messages.mjs",
+    "rl-minify": "sh scripts/rl-minify.sh",
+    "demo": "node demo/make-demo.mjs",
+    "media": "node ../scripts/demo-media.mjs demo/media",
+    "serve": "node scripts/serve.mjs",
+    "visual": "node scripts/visual-check.mjs",
+    "readme-shots": "node scripts/readme-shots.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.18.0",
+    "esbuild": "^0.28.2",
+    "lucide": "^1.51.0",
+    "playwright-core": "^1.63.0",
+    "typescript": "^7.0.2"
+  }
+}

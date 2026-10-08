@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gramophone contributors"
+		]
+	},
+	"gramophone-desc": "现代化的维基音频播放器。gramophone 与 playbutton 标签以 HTML5 音频播放，支持播放列表与同步歌词。为保持兼容，它也呈现 Sm2Shim 与 FlashMP3 的 flashmp3、sm2 和 modernsoundmanager 标签，并可选择呈现 AudioButton 的 ab 标签。",
+	"gramophone-error": "音频播放器出错：$1",
+	"gramophone-unknown": "发生未知错误。",
+	"gramophone-invalidJson": "播放列表不是有效的 JSON 对象。",
+	"gramophone-playlistRequired": "未提供播放列表。请添加 \"playlist\" 列表，其中至少一项包含 \"audioFileUrl\"。",
+	"gramophone-too-many-tracks": "此页面的音频曲目过多。同一页面上的播放器合计最多只能有 $1 首曲目。",
+	"gramophone-tracking-category": "使用音频播放器的页面",
+	"gramophone-tracking-category-desc": "页面中包含用 <code>&lt;gramophone&gt;</code>、<code>&lt;playbutton&gt;</code>、<code>&lt;flashmp3&gt;</code>、<code>&lt;sm2&gt;</code> 或 <code>&lt;modernsoundmanager&gt;</code> 标签创建的音频播放器，或其中某个标签显示了错误而非播放器。",
+	"gramophone-missing-file-category": "音频播放器文件缺失的页面",
+	"gramophone-missing-file-category-desc": "页面中的音频播放器引用了不存在的文件或无法使用的地址。",
+	"gramophone-play": "播放",
+	"gramophone-pause": "暂停",
+	"gramophone-previous": "上一首",
+	"gramophone-next": "下一首",
+	"gramophone-seek": "播放进度",
+	"gramophone-volume": "音量",
+	"gramophone-mute": "静音",
+	"gramophone-unmute": "取消静音",
+	"gramophone-repeat-off": "不循环",
+	"gramophone-repeat-all": "列表循环",
+	"gramophone-repeat-one": "单曲循环",
+	"gramophone-playlist": "播放列表",
+	"gramophone-lyrics": "歌词",
+	"gramophone-lyrics-loading": "正在加载歌词…",
+	"gramophone-lyrics-error": "无法加载歌词。",
+	"gramophone-download": "下载",
+	"gramophone-open-file-page": "打开文件页面",
+	"gramophone-speed": "播放速度",
+	"gramophone-loading": "正在加载…",
+	"gramophone-load-error": "无法播放此音频。",
+	"gramophone-missing-file": "此文件不存在。",
+	"gramophone-autoplay-blocked": "浏览器阻止了自动播放，请点击播放按钮收听。",
+	"gramophone-explicit": "含露骨内容",
+	"gramophone-unknown-title": "未知标题",
+	"gramophone-track-of": "第 $1 首，共 $2 首",
+	"gramophone-now-playing": "正在播放"
+}
