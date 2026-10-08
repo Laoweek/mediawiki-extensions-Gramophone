@@ -63,11 +63,6 @@ Gramophone 是一个可在维基页面上播放音乐的 MediaWiki 扩展。它�
   <img alt="手机屏幕上的维基条目，信息框内的播放器采用窄版布局，段落中有一个播放按钮" src="docs/screenshots/phone-light.png" width="375">
 </picture>
 
-这些图片来自 `client/demo/` 中的演示页面。音乐为 La prière 的《Galaxy Triangle》、
-HIMEHINA 的《Bubblin'》和 VALIS 的《Mukyu Platonic》。演示播放它们在 Apple Music 上的
-30 秒试听片段并显示封面，相关版权属于艺术家及其唱片公司。音频和封面文件在运行演示时下载，
-不包含在本仓库中。演示中的歌词用于介绍播放器，并非歌曲的真实歌词。
-
 ## Gramophone 还是 TimedMediaHandler？
 
 [TimedMediaHandler](https://www.mediawiki.org/wiki/Extension:TimedMediaHandler) 是维基百科和
