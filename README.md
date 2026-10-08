@@ -4,6 +4,10 @@ Gramophone is a MediaWiki extension that plays music on wiki pages. It can put a
 in one player, with cover art and a track list. It can show lyrics that light up as the song
 plays. And it can add small play buttons to sentences and tables.
 
+Gramophone 是一个可在维基页面上播放音乐的 MediaWiki 扩展。它可以在一个播放器中呈现整张专辑，
+并显示封面和曲目列表，也可以显示随歌曲播放而高亮的歌词，还能在句子和表格中添加小巧的播放按钮。
+查看[简体中文说明](README.zh-CN.md)。
+
 Coming from Sm2Shim, FlashMP3 or AudioButton? Gramophone understands their tags too, so your
 pages keep working without edits. See [Moving from Sm2Shim, FlashMP3 or AudioButton](#moving-from-sm2shim-flashmp3-or-audiobutton).
 
