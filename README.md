@@ -72,12 +72,6 @@ On a phone, or in a narrow box such as an infobox, the player gets narrower:
   <img alt="A wiki article on a phone screen, with the player in its narrow layout inside an infobox and a play button in a paragraph" src="docs/screenshots/phone-light.png" width="375">
 </picture>
 
-The pictures come from the demo page in `client/demo/`. Music: "Galaxy Triangle" by La prière,
-"Bubblin'" by HIMEHINA and "Mukyu Platonic" by VALIS. The demo plays their 30-second previews
-from Apple Music and shows their cover art, which belong to the artists and their labels. The
-audio and cover files are downloaded when the demo runs, and are not part of this repository. The
-lyric lines in the demo explain the player. They are not the song's lyrics.
-
 ## Gramophone or TimedMediaHandler?
 
 [TimedMediaHandler](https://www.mediawiki.org/wiki/Extension:TimedMediaHandler) is the media
