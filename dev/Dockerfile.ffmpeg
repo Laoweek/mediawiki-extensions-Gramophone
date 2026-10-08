@@ -1,3 +1,3 @@
 # Tool image with ffmpeg, used by media.mjs (see the ffmpeg service in compose.yaml).
-FROM alpine:3.22
+FROM alpine:3.24
 RUN apk add --no-cache ffmpeg
