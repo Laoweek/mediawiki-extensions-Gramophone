@@ -43,7 +43,7 @@ services:
   # The pages reach /media/ as http://127.0.0.1:PORT, because the extension treats
   # localhost on any port as the wiki's own host.
   uploads:
-    image: nginx:1.29-alpine
+    image: nginx:1.31-alpine
     container_name: gramophone-dev-uploads
     restart: unless-stopped
     ports:
