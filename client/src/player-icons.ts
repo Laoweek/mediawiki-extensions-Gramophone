@@ -5,8 +5,6 @@
  */
 export {
 	Check,
-	Download,
-	ExternalLink,
 	ListMusic,
 	LoaderCircle,
 	MicVocal,

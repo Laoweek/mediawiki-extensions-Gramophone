@@ -270,10 +270,10 @@ The references are recorded like ordinary links:
   segments are resolved.
 - Links to other sites get `rel="nofollow"` wherever a wikitext link to the same URL would,
   following `$wgNoFollowLinks`, `$wgNoFollowNsExceptions` and `$wgNoFollowDomainExceptions`.
-  That covers the plain fallback link to audio on another site, and the player's download and
-  file page links that lead to another site (`rel="noopener nofollow"`). The player decides per
-  track: when either the audio or the `navigationUrl` of a track qualifies, both of its links to
-  other sites get it.
+  That covers the plain fallback link to audio on another site, and the download and file page
+  links of the player and the track menu that lead to another site (`rel="noopener nofollow"`).
+  The player decides per track: when either the audio or the `navigationUrl` of a track
+  qualifies, both of its links to other sites get it.
 
 ## Language variants
 

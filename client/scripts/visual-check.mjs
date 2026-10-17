@@ -51,10 +51,10 @@ const browser = await chromium.launch({
 	args: ['--autoplay-policy=no-user-gesture-required'],
 });
 
-async function open(url, { width = 1280, height = 900, scheme = 'light', reducedMotion = 'no-preference', autoplay = true, init = null, onConsole = null } = {}) {
+async function open(url, { width = 1280, height = 900, scheme = 'light', reducedMotion = 'no-preference', autoplay = true, init = null, onConsole = null, touch = false } = {}) {
 	// Without autoplay, the policy is explicit: headless Chrome lets a late play() through otherwise.
 	const b = autoplay ? browser : await chromium.launch({ channel: CHANNEL, headless: true, args: ['--autoplay-policy=user-gesture-required'] });
-	const ctx = await b.newContext({ viewport: { width, height }, deviceScaleFactor: 2, locale: 'en-US', colorScheme: scheme, reducedMotion });
+	const ctx = await b.newContext({ viewport: { width, height }, deviceScaleFactor: 2, locale: 'en-US', colorScheme: scheme, reducedMotion, hasTouch: touch, isMobile: touch });
 	if (init) await ctx.addInitScript(init);
 	const page = await ctx.newPage();
 	page.on('console', (m) => {
@@ -773,6 +773,19 @@ await step('fallback paths', async () => {
 		return { hidden: r.querySelector('.speed-pop').hidden, focus: r.activeElement && r.activeElement.classList.contains('speed') };
 	}, S);
 	check('Escape closes the inline speed menu and refocuses its button', esc.hidden && esc.focus, JSON.stringify(esc));
+	const R = '#demo-tracks tr:nth-child(2) .ext-gramophone-player';
+	await page.locator(R).scrollIntoViewIfNeeded();
+	const at = await page.locator(`${R} >> .seek-slider`).boundingBox();
+	await page.mouse.click(at.x + 20, at.y + at.height / 2, { button: 'right' });
+	await page.waitForTimeout(150);
+	const menuBox = await page.evaluate((s) => {
+		const pop = document.querySelector(s).shadowRoot.querySelector('.ctx');
+		const q = pop.getBoundingClientRect();
+		return { hidden: pop.hidden, x: Math.round(q.left), y: Math.round(q.top) };
+	}, R);
+	const want = { hidden: false, x: Math.round(at.x + 20), y: Math.round(at.y + at.height / 2) };
+	check('track menu opens at the pointer without the Popover API', !menuBox.hidden && Math.abs(menuBox.x - want.x) <= 1 && Math.abs(menuBox.y - want.y) <= 1, JSON.stringify({ menuBox, want }));
+	await page.keyboard.press('Escape');
 	await page.hover(`${S} >> .dl`);
 	await page.waitForTimeout(700);
 	check('tooltip works without the Popover API', await page.evaluate(() => !!document.querySelector('.ext-gramophone-tooltip')?.shadowRoot.querySelector('.tt.show')));
@@ -1046,6 +1059,149 @@ await step('table rows and focus mounting', async () => {
 });
 
 // ---------------------------------------------------------------------------
+// 5l. Track menu: a right-click, Shift+F10 or a long press opens Download and Open file page.
+await step('track menu', async () => {
+	const menu = (page) =>
+		page.evaluate(() => {
+			for (const host of document.querySelectorAll('.ext-gramophone')) {
+				const pop = host.shadowRoot && host.shadowRoot.querySelector('.ctx');
+				if (!pop || !pop.matches(':popover-open')) continue;
+				const items = Array.from(pop.querySelectorAll('.menu-item')).map((a) => ({ text: a.textContent, href: a.getAttribute('href').replace(/^.*\//, ''), download: a.hasAttribute('download'), rel: a.rel }));
+				const focus = host.shadowRoot.activeElement;
+				const q = pop.getBoundingClientRect();
+				return { id: host.closest('[id]').id, items, focus: focus && focus.textContent, box: { left: q.left, right: q.right, bottom: q.bottom } };
+			}
+			return null;
+		});
+	const { page, close } = await open(`?${Q}`);
+	await mounted(page);
+	await page.evaluate(() => addEventListener('contextmenu', (e) => (window.menuCancelled = e.defaultPrevented)));
+	const R = '#demo-tracks tr:nth-child(2) .ext-gramophone-player';
+	await page.locator(R).scrollIntoViewIfNeeded();
+	await page.click(`${R} >> .play`, { button: 'right' });
+	await page.waitForTimeout(150);
+	const row = await menu(page);
+	const want = [
+		{ text: 'Download', href: 'bubblin.m4a', download: true, rel: 'noopener' },
+		{ text: 'Open file page', href: '1818284776?i=1818284945', download: false, rel: 'noopener nofollow' },
+	];
+	check(
+		"right-click on a row opens the track menu in place of the browser's: download the audio, open the file page",
+		row && JSON.stringify(row.items) === JSON.stringify(want) && row.focus === 'Download' && (await page.evaluate(() => window.menuCancelled)),
+		JSON.stringify(row),
+	);
+	const clip = await clipAround(page, R);
+	await page.screenshot({ path: `${SHOTS}/track-menu.png`, clip: { ...clip, height: clip.height + 90 } });
+	// The Menu key's keyup on Windows and a late long press can land on the open menu.
+	const first = await page.locator(`${R} >> .ctx .menu-item >> nth=0`).boundingBox();
+	await page.mouse.click(first.x + 10, first.y + first.height / 2, { button: 'right' });
+	check("a context menu event on the open menu is cancelled, so the browser's menu stays away", (await menu(page)) !== null && (await page.evaluate(() => window.menuCancelled)));
+	await page.mouse.click(5, 5);
+	check('a click elsewhere closes the track menu', (await menu(page)) === null);
+
+	const A = '#demo-album .ext-gramophone';
+	await page.locator(A).scrollIntoViewIfNeeded();
+	await page.click(`${A} >> .dl`, { button: 'right' });
+	await page.waitForTimeout(150);
+	check("links in the card keep the browser's menu", (await menu(page)) === null && !(await page.evaluate(() => window.menuCancelled)));
+	if (!(await page.locator(`${A} >> .drawer.open`).count())) await page.click(`${A} >> [part~="playlist-button"]`);
+	await page.click(`${A} >> .row >> nth=3`, { button: 'right' });
+	await page.waitForTimeout(150);
+	const listRow = await menu(page);
+	check('right-click on a playlist row offers that track', listRow && listRow.items[0].href === 'ripple.m4a', JSON.stringify(listRow));
+	await page.keyboard.press('Escape');
+
+	const B = '#demo-buttons .ext-gramophone-button';
+	await page.locator(B).first().scrollIntoViewIfNeeded();
+	await page.locator(B).first().locator('.b').focus();
+	await page.keyboard.press('Shift+F10');
+	await page.waitForTimeout(150);
+	await page.keyboard.press('ArrowDown');
+	const keyed = await menu(page);
+	await page.keyboard.press('Escape');
+	const back = await page.evaluate((s) => document.querySelector(s).shadowRoot.activeElement?.className, B);
+	check('Shift+F10 opens the menu of a focused button, arrows move, Escape closes it and refocuses the button', keyed && keyed.focus === 'Open file page' && (await menu(page)) === null && back === 'b', JSON.stringify({ keyed, back }));
+
+	// The subtitle under the pointer is rebuilt on every state change, here a pause.
+	const S = '#demo-single .ext-gramophone';
+	await page.locator(S).scrollIntoViewIfNeeded();
+	await page.click(`${S} >> .play`);
+	await waitPlaying(page, S, 0.2);
+	const artist = await page.locator(`${S} >> [part~="artist"]`).boundingBox();
+	await page.mouse.click(artist.x + 5, artist.y + 5, { button: 'right' });
+	await page.evaluate((s) => document.querySelector(s).shadowRoot.querySelector('audio').pause(), S);
+	await page.waitForTimeout(300);
+	await page.mouse.wheel(0, 40);
+	await page.waitForTimeout(200);
+	const moved = await page.evaluate((s) => {
+		const r = document.querySelector(s).shadowRoot.querySelector('.ctx').getBoundingClientRect();
+		return { x: Math.round(r.left), y: Math.round(r.top) };
+	}, S);
+	const expected = { x: Math.round(artist.x + 5), y: Math.round(artist.y + 5 - 40) };
+	check('the open menu moves with its player on scroll, also after the player redrew', Math.abs(moved.x - expected.x) <= 1 && Math.abs(moved.y - expected.y) <= 1, JSON.stringify({ moved, expected }));
+	await page.keyboard.press('Escape');
+	await close();
+
+	// Phone: the card keeps its download button, a long press opens the menu without playing.
+	const phone = await open(`?${Q}`, { width: 390, height: 844, touch: true });
+	const p = phone.page;
+	await mounted(p);
+	const dl = await p.evaluate(() => getComputedStyle(document.querySelector('#demo-single .ext-gramophone').shadowRoot.querySelector('.dl')).display);
+	check('a phone-width card shows its download button', dl !== 'none', dl);
+	const cdp = await p.context().newCDPSession(p);
+	await p.locator(B).first().scrollIntoViewIfNeeded();
+	const box = await p.locator(B).first().boundingBox();
+	const x = box.x + box.width / 2;
+	const y = box.y + box.height / 2;
+	const hold = async (moveBy) => {
+		await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+		if (moveBy) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + moveBy }] });
+		await p.waitForTimeout(700);
+		await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+		await p.waitForTimeout(200);
+	};
+	const playing = () =>
+		p.evaluate((s) => {
+			const a = document.querySelector(s).shadowRoot.querySelector('audio');
+			return !!a && !a.paused;
+		}, B);
+	await hold(30);
+	check('a finger that moves (a scroll) opens no menu', (await menu(p)) === null);
+	await hold(0);
+	const pressed = await menu(p);
+	check('a long press on a button opens its menu and does not play', pressed && pressed.items.length === 2 && !(await playing()), JSON.stringify(pressed));
+	check('a long press opens the menu above the finger, where the hand does not cover it', pressed && pressed.box.bottom <= y && pressed.box.left <= x && pressed.box.right >= x, JSON.stringify({ box: pressed && pressed.box, x, y }));
+	await p.touchscreen.tap(5, 5);
+	await p.touchscreen.tap(x, y);
+	await waitPlaying(p, B, 0.1);
+	check('after the menu, a tap plays as before', (await menu(p)) === null);
+	await p.touchscreen.tap(x, y);
+
+	// Chrome's own long press gesture: it fires contextmenu and moves focus back to the button.
+	const longTap = (at) => cdp.send('Input.synthesizeTapGesture', { x: Math.round(at.x), y: Math.round(at.y), duration: 1200, tapCount: 1, gestureSourceType: 'touch' });
+	await longTap({ x, y });
+	await p.waitForTimeout(300);
+	const gesture = (await menu(p)) !== null;
+	await p.keyboard.press('Escape');
+	const escaped = (await menu(p)) === null;
+	await p.locator(B).first().locator('.b').focus();
+	await p.keyboard.press('Enter');
+	await p.waitForTimeout(800);
+	const keyPlays = await playing();
+	check('after a long press gesture, Escape closes the menu and Enter still presses the button', gesture && escaped && keyPlays, JSON.stringify({ gesture, escaped, keyPlays }));
+	await p.keyboard.press('Enter');
+
+	const P = '#demo-single .ext-gramophone';
+	await p.locator(P).scrollIntoViewIfNeeded();
+	await p.locator(`${P} >> .play`).tap();
+	await waitPlaying(p, P, 0.2);
+	const seek = await p.locator(`${P} >> .seek-slider`).boundingBox();
+	await longTap({ x: seek.x + seek.width * 0.6, y: seek.y + seek.height / 2 });
+	await p.waitForTimeout(300);
+	check('a finger held on the seek bar drags it and opens no menu', (await menu(p)) === null);
+	await phone.close();
+});
+
 // 5i. Hostile input (#demo-hostile): markup in the title, artist and album stays text, and no
 // element on the page, in light or shadow DOM, carries an event handler or a script URL.
 await step('hostile text', async () => {

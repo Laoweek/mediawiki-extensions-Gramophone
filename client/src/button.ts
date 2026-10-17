@@ -8,6 +8,7 @@ import type { Config } from './config';
 import { Engine } from './engine';
 import { onMissing } from './exists';
 import { CircleAlert, Pause, Play, icon } from './icons';
+import { bindMenu } from './menu';
 import { adopt } from './styles';
 import { bindTooltips, refreshTip } from './tooltip';
 import { t } from './i18n';
@@ -138,6 +139,7 @@ export function mountButton(host: HTMLElement, root: ShadowRoot, cfg: Config): H
 		engine.toggle();
 	});
 
+	bindMenu(btn, () => tracks[engine ? engine.index : first()]);
 	render();
 	// hidemissing: a file can turn out missing after the button was built (exists.ts).
 	onMissing(host, render);

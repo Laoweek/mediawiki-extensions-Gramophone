@@ -71,6 +71,23 @@ export function label(el: Element, text: string): void {
 	}
 }
 
+/** Points the link at href, or hides it. A nofollow track adds rel="nofollow" for other sites. */
+export function setLink(a: HTMLAnchorElement, href: string, nofollow: boolean): void {
+	a.hidden = !href;
+	if (!href) {
+		a.removeAttribute('href');
+		return;
+	}
+	a.href = href;
+	let offsite = false;
+	try {
+		offsite = new URL(href, location.href).origin !== location.origin;
+	} catch (e) {
+		// safeUrl() only lets valid URLs through.
+	}
+	a.rel = nofollow && offsite ? 'noopener nofollow' : 'noopener';
+}
+
 export function report(err: unknown): void {
 	try {
 		const mw = window.mw;

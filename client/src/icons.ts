@@ -1,9 +1,9 @@
 /**
  * Lucide icons (https://lucide.dev, ISC license, see the bundle header).
  * Only the icons imported here end up in the bundle. These are the ones the
- * button needs, the player and row icons are in player-icons.ts.
+ * button and the track menu need, the player and row icons are in player-icons.ts.
  */
-export { CircleAlert, Pause, Play } from 'lucide';
+export { CircleAlert, Download, ExternalLink, Pause, Play } from 'lucide';
 
 import { svg } from './util';
 

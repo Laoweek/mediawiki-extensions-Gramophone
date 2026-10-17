@@ -58,7 +58,9 @@
 				"gramophone-load-error",
 				"gramophone-missing-file",
 				"gramophone-unknown-title",
-				"gramophone-track-of"
+				"gramophone-track-of",
+				"gramophone-download",
+				"gramophone-open-file-page"
 			]
 		},
 		"ext.gramophone.player": {
@@ -82,8 +84,6 @@
 				"gramophone-lyrics",
 				"gramophone-lyrics-loading",
 				"gramophone-lyrics-error",
-				"gramophone-download",
-				"gramophone-open-file-page",
 				"gramophone-speed",
 				"gramophone-loading",
 				"gramophone-autoplay-blocked",

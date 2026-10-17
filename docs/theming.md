@@ -125,7 +125,7 @@ Full player (`<gramophone>`):
 | `time` | both time labels. `current-time` and `duration` select one of them. |
 | `seek-slider` | the seek bar, see the sliders below |
 | `repeat-button`, `speed-button`, `volume-button` | those buttons |
-| `popover` | the speed menu and the volume panel. `speed-popover` and `volume-popover` select one of them. |
+| `popover` | the speed menu, the volume panel and the track menu. `speed-popover`, `volume-popover` and `track-menu` select one of them. |
 | `speed-option` | an entry of the speed menu |
 | `mute-button`, `volume-slider`, `volume-percent` | the contents of the volume panel |
 | `playlist` | the playlist |
@@ -172,6 +172,8 @@ In every layout:
 | Part | Element |
 | --- | --- |
 | `button` | every icon button, and the download and file page links |
+| `track-menu` | the menu that a right-click or a long press on the player opens. It also has the part `popover`. |
+| `download-option`, `file-page-option` | its entries: download, open the file page |
 | `icon` | every icon |
 | `tooltip` | the tooltip bubble. It lives in its own element at the end of the page, so select it with `.ext-gramophone-tooltip::part(tooltip)`. |
 
@@ -274,10 +276,11 @@ A different font:
 }
 ```
 
-No download button:
+No download button, and no download entry in the track menu:
 
 ```css
-.ext-gramophone::part(download-button) {
+.ext-gramophone::part(download-button),
+.ext-gramophone::part(download-option) {
 	display: none;
 }
 ```

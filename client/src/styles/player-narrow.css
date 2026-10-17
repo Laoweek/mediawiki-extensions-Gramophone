@@ -49,7 +49,7 @@
 /* Very narrow (table cells, infoboxes, quotes on phones): drop secondary
    controls one by one, so the title, transport and both times always fit.
    The row heights stay the same, so the placeholder size still matches. */
-@container (max-width: 23.99rem) {
+@container (max-width: 19.99rem) {
 	.dl {
 		display: none;
 	}

@@ -6,11 +6,9 @@
 import { applyColors } from './colors';
 import type { Config, Track } from './config';
 import { Engine, type Change, type Repeat } from './engine';
-import { CircleAlert, Pause, Play, icon, type IconNode } from './icons';
+import { CircleAlert, Download, ExternalLink, Pause, Play, icon, type IconNode } from './icons';
 import {
 	Check,
-	Download,
-	ExternalLink,
 	ListMusic,
 	LoaderCircle,
 	MicVocal,
@@ -26,11 +24,12 @@ import {
 } from './player-icons';
 import { t } from './i18n';
 import { activeLine, loadLyrics, type Lyrics } from './lyrics';
+import { bindMenu } from './menu';
 import { Popover } from './popover';
 import { Slider } from './slider';
 import { adopt } from './styles';
 import { bindTooltips, refreshTip } from './tooltip';
-import { formatTime, h, label, partState, reducedMotion, setPressed } from './util';
+import { formatTime, h, label, partState, reducedMotion, setLink, setPressed } from './util';
 import { getVolume, isMuted, setMuted, setVolume, volumeSettable } from './volume';
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -50,23 +49,6 @@ function iconLink(cls: string, part: string, node: IconNode, text: string): HTML
 	const a = h('a', 'btn ' + cls, { rel: 'noopener', part: part + ' button' }, [icon(node)]);
 	label(a, text);
 	return a;
-}
-
-/** Points the link at href, or hides it. A nofollow track adds rel="nofollow" for other sites. */
-function setLink(a: HTMLAnchorElement, href: string, nofollow: boolean): void {
-	a.hidden = !href;
-	if (!href) {
-		a.removeAttribute('href');
-		return;
-	}
-	a.href = href;
-	let offsite = false;
-	try {
-		offsite = new URL(href, location.href).origin !== location.origin;
-	} catch (e) {
-		// safeUrl() only lets valid URLs through.
-	}
-	a.rel = nofollow && offsite ? 'noopener nofollow' : 'noopener';
 }
 
 function setIcon(el: Element, node: IconNode, cls?: string): void {
@@ -208,6 +190,7 @@ class Player {
 		this.setupPopovers(opts);
 		this.bind();
 		bindTooltips(root);
+		bindMenu(this.card, (target) => this.menuTrack(target));
 		this.setDrawer(cfg.playlistOpen);
 
 		e.on((c) => this.update(c));
@@ -236,6 +219,13 @@ class Player {
 			b.appendChild(icon(CircleAlert, 'row-warn', 'playlist-warning'));
 		}
 		return h('li', '', {}, [b]);
+	}
+
+	/** The track menu offers the playlist row under the pointer, or the current track. The lyrics keep the browser's menu. */
+	private menuTrack(target: Element): Track | null {
+		if (target.closest('.lyrics-wrap')) return null;
+		const row = target.closest('.row');
+		return row ? this.e.tracks[Number(row.getAttribute('data-index'))] : this.e.track;
 	}
 
 	private setupPopovers(wrap: HTMLElement): void {

@@ -24,6 +24,7 @@ export * from './colors';
 export * from './engine';
 export * from './i18n';
 export * from './icons';
+export * from './menu';
 export * from './styles';
 export * from './tooltip';
 export * from './util';

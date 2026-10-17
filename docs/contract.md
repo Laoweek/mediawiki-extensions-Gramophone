@@ -25,7 +25,7 @@ The client ships as two ResourceLoader modules, built by `client/build.mjs`:
 
 | Module | File | Holds |
 | --- | --- | --- |
-| `ext.gramophone` | `resources/dist/gramophone.js` | entry, config, button, engine, `exists`, tooltip, i18n, util |
+| `ext.gramophone` | `resources/dist/gramophone.js` | entry, config, button, engine, `exists`, tooltip, track menu, i18n, util |
 | `ext.gramophone.player` | `resources/dist/gramophone.player.js` | card player, row, slider, popover, volume, lyrics |
 
 `ext.gramophone.player` depends on `ext.gramophone` and reuses its code through `require('ext.gramophone')`, so that

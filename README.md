@@ -28,6 +28,8 @@ pages keep working without edits. See [Moving from Sm2Shim, FlashMP3 or AudioBut
 - Audio from wiki uploads, also from a shared repository such as Commons, or from other sites,
   with an optional list of allowed sites.
 - Audio loads only when the reader presses play. Players are set up as they scroll into view.
+- A download button in the player. A right-click on any player or play button, or a long press
+  on a touch screen, opens a menu to download the song or open its file page.
 - Keyboard and screen reader support, dark mode, and the system media controls (lock screen,
   media keys). Without JavaScript, pages show plain links to the audio.
 - Styling with CSS custom properties and `::part()` rules, for the whole wiki or one player. See

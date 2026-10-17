@@ -68,7 +68,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: !0 
 var index_exports = {};
 __export(index_exports, {
   CircleAlert: () => CircleAlert,
+  Download: () => Download,
   Engine: () => Engine,
+  ExternalLink: () => ExternalLink,
   Pause: () => Pause,
   Play: () => Play,
   addSheet: () => addSheet,
@@ -76,6 +78,7 @@ __export(index_exports, {
   applyColors: () => applyColors,
   applyVolume: () => applyVolume,
   backgroundFor: () => backgroundFor,
+  bindMenu: () => bindMenu,
   bindTooltips: () => bindTooltips,
   clamp: () => clamp,
   contrast: () => contrast,
@@ -98,6 +101,7 @@ __export(index_exports, {
   refreshTip: () => refreshTip,
   report: () => report,
   ringOffset: () => ringOffset,
+  setLink: () => setLink,
   setMuted: () => setMuted,
   setPressed: () => setPressed,
   setVolume: () => setVolume,
@@ -327,6 +331,19 @@ function setPressed(el, on) {
 }
 function label(el, text) {
   el.getAttribute("aria-label") !== text && (el.setAttribute("aria-label", text), el.setAttribute("data-tip", text));
+}
+function setLink(a, href, nofollow) {
+  if (a.hidden = !href, !href) {
+    a.removeAttribute("href");
+    return;
+  }
+  a.href = href;
+  let offsite = !1;
+  try {
+    offsite = new URL(href, location.href).origin !== location.origin;
+  } catch (e) {
+  }
+  a.rel = nofollow && offsite ? "noopener nofollow" : "noopener";
 }
 function report(err) {
   try {
@@ -804,6 +821,20 @@ var CircleAlert = [
   ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16" }]
 ];
 
+// node_modules/.pnpm/lucide@1.51.0/node_modules/lucide/dist/esm/icons/download.mjs
+var Download = [
+  ["path", { d: "M12 15V3" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }],
+  ["path", { d: "m7 10 5 5 5-5" }]
+];
+
+// node_modules/.pnpm/lucide@1.51.0/node_modules/lucide/dist/esm/icons/external-link.mjs
+var ExternalLink = [
+  ["path", { d: "M15 3h6v6" }],
+  ["path", { d: "M10 14 21 3" }],
+  ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }]
+];
+
 // node_modules/.pnpm/lucide@1.51.0/node_modules/lucide/dist/esm/icons/pause.mjs
 var Pause = [
   ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1" }],
@@ -841,7 +872,7 @@ function icon(node, cls, part) {
 }
 
 // src/styles/common.css
-var common_default = ":host{--bg: var(--gramophone-background, #fff);--fg: var(--gramophone-foreground, #18181b);--muted: var(--gramophone-muted, #f4f4f5);--muted-fg: var(--gramophone-muted-foreground, #676769);--border: var(--gramophone-border, #e4e4e7);--accent: var(--gramophone-accent, #f4f4f5);--accent-fg: var(--gramophone-accent-foreground, var(--fg));--primary: var(--gramophone-primary, #d86575);--primary-fg: var(--gramophone-primary-foreground, #fff);--primary-hover: var(--gramophone-primary-hover, #c15c6a);--primary-soft: var(--gramophone-primary-soft, #fbf0f1);--highlight: var(--gramophone-highlight, #a24c58);--ring: var(--gramophone-ring, var(--primary));--track: var(--gramophone-track, #f5d9dd);--range: var(--gramophone-range, var(--primary));--thumb: var(--gramophone-thumb, var(--bg));--buffered: var(--gramophone-buffered, #efc1c8);--destructive: var(--gramophone-destructive, #dc2626);--radius: var(--gramophone-radius, .75rem);--shadow: var(--gramophone-shadow, 0 1px 2px 0 rgb(0 0 0 / .05));--cover-from: var(--gramophone-cover-from, var(--primary));--cover-to: var(--gramophone-cover-to, #ecb2ba);--cover-fg: var(--gramophone-cover-foreground, #fff);--cover-size: var(--gramophone-cover-size, 6rem)}*,*:before,*:after{box-sizing:border-box}[hidden]{display:none!important}.icon{display:block;flex-shrink:0;width:1rem;height:1rem;pointer-events:none}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}.spin{animation:gramophone-spin .9s linear infinite}@keyframes gramophone-spin{to{transform:rotate(360deg)}}.tt{position:fixed;inset:0 auto auto 0;z-index:2147483000;max-width:18rem;margin:0;padding:.375rem .625rem;overflow:visible;border:0;border-radius:calc(var(--radius) - .25rem);background:var(--fg);color:var(--bg);box-shadow:0 4px 12px #0000001f;font-size:.75rem;font-weight:500;line-height:1rem;text-align:center;white-space:pre-line;overflow-wrap:anywhere;pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .12s,transform .12s}.tt.below{transform:translateY(-3px)}.tt.show{opacity:1;transform:none}@media(prefers-reduced-motion:reduce){.tt{transition:none}.spin{animation-duration:1.8s}}";
+var common_default = ":host{--bg: var(--gramophone-background, #fff);--fg: var(--gramophone-foreground, #18181b);--muted: var(--gramophone-muted, #f4f4f5);--muted-fg: var(--gramophone-muted-foreground, #676769);--border: var(--gramophone-border, #e4e4e7);--accent: var(--gramophone-accent, #f4f4f5);--accent-fg: var(--gramophone-accent-foreground, var(--fg));--primary: var(--gramophone-primary, #d86575);--primary-fg: var(--gramophone-primary-foreground, #fff);--primary-hover: var(--gramophone-primary-hover, #c15c6a);--primary-soft: var(--gramophone-primary-soft, #fbf0f1);--highlight: var(--gramophone-highlight, #a24c58);--ring: var(--gramophone-ring, var(--primary));--track: var(--gramophone-track, #f5d9dd);--range: var(--gramophone-range, var(--primary));--thumb: var(--gramophone-thumb, var(--bg));--buffered: var(--gramophone-buffered, #efc1c8);--destructive: var(--gramophone-destructive, #dc2626);--radius: var(--gramophone-radius, .75rem);--shadow: var(--gramophone-shadow, 0 1px 2px 0 rgb(0 0 0 / .05));--cover-from: var(--gramophone-cover-from, var(--primary));--cover-to: var(--gramophone-cover-to, #ecb2ba);--cover-fg: var(--gramophone-cover-foreground, #fff);--cover-size: var(--gramophone-cover-size, 6rem)}*,*:before,*:after{box-sizing:border-box}[hidden]{display:none!important}.icon{display:block;flex-shrink:0;width:1rem;height:1rem;pointer-events:none}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}.spin{animation:gramophone-spin .9s linear infinite}@keyframes gramophone-spin{to{transform:rotate(360deg)}}.tt{position:fixed;inset:0 auto auto 0;z-index:2147483000;max-width:18rem;margin:0;padding:.375rem .625rem;overflow:visible;border:0;border-radius:calc(var(--radius) - .25rem);background:var(--fg);color:var(--bg);box-shadow:0 4px 12px #0000001f;font-size:.75rem;font-weight:500;line-height:1rem;text-align:center;white-space:pre-line;overflow-wrap:anywhere;pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .12s,transform .12s}.tt.below{transform:translateY(-3px)}.tt.show{opacity:1;transform:none}.pop{position:fixed;inset:0 auto auto 0;z-index:50;margin:0;padding:.25rem;overflow:visible;border:1px solid var(--border);border-radius:calc(var(--radius) - .125rem);background:var(--bg);color:var(--fg);box-shadow:0 10px 15px -3px #0000001a,0 4px 6px -4px #0000001a;font-size:.875rem;line-height:1.25rem}.pop:popover-open{animation:gramophone-pop .12s ease-out}@keyframes gramophone-pop{0%{opacity:0;transform:scale(.96)}}.menu{display:flex;flex-direction:column;min-width:6.5rem}.menu-item{display:flex;align-items:center;gap:.5rem;height:2rem;margin:0;padding:0 .75rem 0 .5rem;border:0;border-radius:calc(var(--radius) - .375rem);background:transparent;color:var(--fg);font:inherit;font-size:.8125rem;font-variant-numeric:tabular-nums;text-align:start;text-decoration:none;cursor:pointer;outline:none}.menu-item:hover,.menu-item:focus-visible{background:var(--accent)}.menu-item:focus-visible{box-shadow:inset 0 0 0 2px var(--ring)}.ctx{font-style:normal;font-weight:400;letter-spacing:normal;text-align:start;text-indent:0;text-shadow:none;text-transform:none;white-space:nowrap;word-spacing:normal;transform-origin:0 0}.ctx .menu-item{padding-right:1rem}@media(pointer:coarse){.b,.pill,.bar,.list{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.bar a{-webkit-touch-callout:default}}@media(prefers-reduced-motion:reduce){.tt{transition:none}.pop:popover-open{animation:none}.spin{animation-duration:1.8s}}";
 
 // src/styles/button.css
 var button_default = ":host{display:inline-block;position:relative;width:var(--gramophone-button-size, 1.75rem);height:var(--gramophone-button-size, 1.75rem);line-height:0;vertical-align:middle;--fill: var(--gramophone-button-background, var(--primary-soft));--glyph: var(--gramophone-button-foreground, var(--primary));--ring-bg: var(--track);--fill-error: #fdeaea}@supports (color: color-mix(in srgb,red 50%,blue)){:host{--fill-hover: color-mix(in srgb, var(--primary) 18%, var(--bg));--fill-error: color-mix(in srgb, var(--destructive) 14%, var(--bg))}}.b{position:relative;display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--glyph);font:inherit;cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent}.disc{position:absolute;inset:14%;border-radius:50%;background:var(--fill);transition:background-color .15s,transform .12s}.b:hover .disc{background:var(--fill-hover, var(--fill))}.b:active .disc{transform:scale(.92)}.b:focus-visible{outline:2px solid var(--ring);outline-offset:1px}.b .icon{position:absolute;top:50%;left:50%;width:44%;height:44%;fill:currentColor;transform:translate(-50%,-50%)}.ring{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:rotate(-90deg);pointer-events:none}.ring circle{fill:none;stroke-width:2.5}.ring-bg{stroke:var(--ring-bg);opacity:0;transition:opacity .2s}.ring-fg{stroke:var(--range);stroke-linecap:round;opacity:0;transition:opacity .2s}.b.active .ring-bg,.b.active .ring-fg,.b.loading .ring-fg{opacity:1}.b.playing{color:var(--primary-fg)}.b.playing .disc{background:var(--primary)}.b.playing:hover .disc{background:var(--primary-hover)}.b.custom.playing{color:var(--glyph)}.b.custom .disc,.b.custom.playing .disc,.b.custom.playing:hover .disc{background:var(--fill)}@supports (color: color-mix(in srgb,red 50%,blue)){.b.custom:hover .disc,.b.custom.playing:hover .disc{background:color-mix(in srgb,var(--fill) 86%,var(--glyph))}}.b.loading .ring{animation:gramophone-ring-spin .9s linear infinite}.b.loading .ring-fg{stroke-dashoffset:69.5}@keyframes gramophone-ring-spin{0%{transform:rotate(-90deg)}to{transform:rotate(270deg)}}.b.error{color:var(--destructive)}.b.error .disc{background:var(--fill-error)}.b.error .icon{fill:none;width:52%;height:52%}.b[aria-disabled=true]{cursor:not-allowed}.count{position:absolute;top:-.25rem;right:-.3125rem;min-width:.875rem;height:.875rem;padding:0 .1875rem;border-radius:9999px;background:var(--fg);color:var(--bg);box-shadow:0 0 0 1.5px var(--bg);font-size:.5625rem;font-weight:700;line-height:.875rem;text-align:center;font-variant-numeric:tabular-nums;pointer-events:none}@media(prefers-reduced-motion:reduce){.b.loading .ring{animation-duration:1.8s}.disc,.ring-bg,.ring-fg{transition:none}}@media(forced-colors:active){.b{border:1px solid ButtonText}.ring-fg{stroke:Highlight}}";
@@ -945,6 +976,142 @@ function bindTooltips(root) {
   bound.add(root), !entering && (entering = !0, document.addEventListener("pointerover", enter, !0), document.addEventListener("focusin", enter, !0));
 }
 
+// src/menu.ts
+var NATIVE2 = typeof HTMLElement != "undefined" && "popover" in HTMLElement.prototype, LONG_PRESS = 500, SLOP = 10, FINGER = 24, areas = /* @__PURE__ */ new WeakMap(), menus = /* @__PURE__ */ new WeakMap(), listening2 = !1, shown = null, press = null, swallowClick = !1;
+function bindMenu(area, track2) {
+  areas.set(area, track2), !listening2 && (listening2 = !0, document.addEventListener("contextmenu", onContextMenu, !0), document.addEventListener("keydown", onKeyDown, !0), document.addEventListener("pointerdown", onPointerDown, !0), document.addEventListener("click", onClick, !0));
+}
+function find(ev) {
+  let path = ev.composedPath();
+  for (let node of path) {
+    if (!(node instanceof Element)) continue;
+    if (node.tagName === "A") return null;
+    let fn = areas.get(node);
+    if (!fn) continue;
+    let target2 = path[0] instanceof Element ? path[0] : node, track2 = fn(target2), root = node.getRootNode();
+    return !track2 || !(track2.src || track2.link) || !(root instanceof ShadowRoot) ? null : { root, area: node, target: target2, track: track2 };
+  }
+  return null;
+}
+function onContextMenu(ev) {
+  if (shown && ev.composedPath().includes(shown.pop)) {
+    ev.preventDefault();
+    return;
+  }
+  let hit = find(ev);
+  if (!hit) return;
+  ev.preventDefault();
+  let finger = press !== null;
+  if (press) {
+    let dragging = !press.timer;
+    if (cancelPress(), dragging) return;
+    swallowClick = !0;
+  }
+  let r = hit.target.getBoundingClientRect(), inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+  show2(hit, inside ? ev.clientX : r.left, inside ? ev.clientY : r.bottom, finger);
+}
+function onKeyDown(ev) {
+  if (shown && ev.key === "Escape" && !ev.composedPath().includes(shown.pop)) {
+    ev.preventDefault(), close(!0);
+    return;
+  }
+  if (ev.key !== "ContextMenu" && !(ev.key === "F10" && ev.shiftKey)) return;
+  let hit = find(ev);
+  if (!hit) return;
+  ev.preventDefault();
+  let r = hit.target.getBoundingClientRect();
+  show2(hit, r.left, r.bottom, !1);
+}
+function onPointerDown(ev) {
+  if (swallowClick = !1, cancelPress(), shown && !ev.composedPath().includes(shown.pop) && close(!1), ev.pointerType === "mouse" || !ev.isPrimary) return;
+  let hit = find(ev);
+  if (!hit) return;
+  let x = ev.clientX, y = ev.clientY, opens = () => {
+    cancelPress(), swallowClick = !0, show2(hit, x, y, !0);
+  }, timer2 = hit.target.closest('[role="slider"]') ? 0 : window.setTimeout(opens, LONG_PRESS);
+  press = { id: ev.pointerId, x, y, timer: timer2 }, addEventListener("pointermove", onPressMove, !0), addEventListener("pointerup", cancelPress, !0), addEventListener("pointercancel", cancelPress, !0);
+}
+function onPressMove(ev) {
+  press && ev.pointerId === press.id && Math.hypot(ev.clientX - press.x, ev.clientY - press.y) > SLOP && cancelPress();
+}
+function cancelPress() {
+  press && (clearTimeout(press.timer), press = null, removeEventListener("pointermove", onPressMove, !0), removeEventListener("pointerup", cancelPress, !0), removeEventListener("pointercancel", cancelPress, !0));
+}
+function onClick(ev) {
+  !swallowClick || ev.detail === 0 || (swallowClick = !1, ev.preventDefault(), ev.stopPropagation());
+}
+var dismiss = () => close(!1), follow = () => {
+  if (!shown) return;
+  let r = shown.area.getBoundingClientRect();
+  place2(shown.pop, r.left + shown.dx, r.top + shown.dy, shown.above);
+};
+function show2(hit, x, y, above) {
+  if (shown && shown.area === hit.area && Date.now() - shown.at < 600) {
+    shown.pop.contains(focused()) || shown.pop.querySelector(".menu-item").focus({ preventScroll: !0 });
+    return;
+  }
+  close(!1), hide();
+  let pop = popFor(hit.root), menu = pop.firstElementChild, tr = hit.track;
+  if (menu.setAttribute("aria-label", tr.title), menu.textContent = "", tr.src) {
+    let a = item(Download, t("gramophone-download"), "download-option");
+    setLink(a, tr.src, tr.nofollow), a.setAttribute("download", ""), a.target = "_blank", menu.appendChild(a);
+  }
+  if (tr.link) {
+    let a = item(ExternalLink, t("gramophone-open-file-page"), "file-page-option");
+    setLink(a, tr.link, tr.nofollow), menu.appendChild(a);
+  }
+  let restore = focused();
+  if (NATIVE2)
+    try {
+      pop.showPopover();
+    } catch (e) {
+    }
+  else pop.hidden = !1;
+  place2(pop, x, y, above);
+  let r = hit.area.getBoundingClientRect();
+  shown = { pop, area: hit.area, at: Date.now(), restore, dx: x - r.left, dy: y - r.top, above }, menu.firstElementChild.focus({ preventScroll: !0 }), addEventListener("scroll", follow, { capture: !0, passive: !0 }), addEventListener("resize", dismiss), addEventListener("blur", dismiss);
+}
+function close(refocus) {
+  if (!shown) return;
+  let { pop, restore } = shown;
+  if (shown = null, removeEventListener("scroll", follow, !0), removeEventListener("resize", dismiss), removeEventListener("blur", dismiss), NATIVE2)
+    try {
+      pop.hidePopover();
+    } catch (e) {
+    }
+  else pop.hidden = !0;
+  refocus && restore && restore.isConnected && restore.focus({ preventScroll: !0 });
+}
+function popFor(root) {
+  let pop = menus.get(root);
+  if (pop) return pop;
+  let menu = h("div", "menu", { role: "menu" });
+  return pop = h("div", "pop ctx", { part: "popover track-menu" }, [menu]), NATIVE2 ? pop.setAttribute("popover", "manual") : pop.hidden = !0, menu.addEventListener("keydown", onMenuKey), menu.addEventListener("click", () => setTimeout(() => close(!0))), root.appendChild(pop), menus.set(root, pop), pop;
+}
+function item(node, text, part) {
+  return h("a", "menu-item", { role: "menuitem", tabindex: "-1", part }, [icon(node), text]);
+}
+function onMenuKey(ev) {
+  let items = Array.from(ev.currentTarget.querySelectorAll(".menu-item")), i = items.indexOf(ev.target), next = -1;
+  if (ev.key === "ArrowDown") next = (i + 1) % items.length;
+  else if (ev.key === "ArrowUp") next = (i - 1 + items.length) % items.length;
+  else if (ev.key === "Home") next = 0;
+  else if (ev.key === "End") next = items.length - 1;
+  else if (ev.key === " ") ev.target.click();
+  else if (ev.key !== "Escape" && ev.key !== "Tab") return;
+  ev.preventDefault(), ev.stopPropagation(), next >= 0 ? items[next].focus() : ev.key !== " " && close(!0);
+}
+function focused() {
+  let el = document.activeElement;
+  for (; el && el.shadowRoot && el.shadowRoot.activeElement; ) el = el.shadowRoot.activeElement;
+  return el instanceof HTMLElement && el !== document.body ? el : null;
+}
+function place2(pop, x, y, above) {
+  pop.style.left = pop.style.top = "0px";
+  let origin = pop.getBoundingClientRect(), w = pop.offsetWidth, hgt = pop.offsetHeight, doc = document.documentElement, left = clamp(above ? x - w / 2 : x, 8, doc.clientWidth - w - 8), top;
+  above ? top = y - FINGER - hgt >= 8 ? y - FINGER - hgt : y + FINGER : top = y + hgt + 8 > doc.clientHeight ? Math.max(8, y - hgt) : y, pop.style.left = left - origin.left + "px", pop.style.top = top - origin.top + "px";
+}
+
 // src/button.ts
 var R = 14.75, C = 2 * Math.PI * R, template = null;
 function makeTemplate() {
@@ -998,7 +1165,7 @@ function mountButton(host, root, cfg) {
       });
     }
     engine.failure !== "missing" && engine.toggle();
-  }), render(), onMissing(host, render), btn;
+  }), bindMenu(btn, () => tracks[engine ? engine.index : first()]), render(), onMissing(host, render), btn;
 }
 
 // src/index.ts
@@ -1046,10 +1213,10 @@ function showList(host) {
     seen.delete(host);
     return;
   }
-  let list = host.querySelector(".ext-gramophone-fallback"), focused = Array.from(host.querySelectorAll("a")).indexOf(document.activeElement), root = host.attachShadow({ mode: "open" });
+  let list = host.querySelector(".ext-gramophone-fallback"), focused2 = Array.from(host.querySelectorAll("a")).indexOf(document.activeElement), root = host.attachShadow({ mode: "open" });
   if (!list) return;
   let copy = list.cloneNode(!0);
-  root.appendChild(copy), focused >= 0 && copy.querySelectorAll("a")[focused].focus();
+  root.appendChild(copy), focused2 >= 0 && copy.querySelectorAll("a")[focused2].focus();
 }
 function isRow(host, cfg) {
   return cfg.tracks.length === 1 && !!host.closest("td, th");

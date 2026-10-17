@@ -10,6 +10,7 @@ import { Engine, type Change } from './engine';
 import { CircleAlert, Pause, Play, icon, type IconNode } from './icons';
 import { LoaderCircle } from './player-icons';
 import { t } from './i18n';
+import { bindMenu } from './menu';
 import { Slider } from './slider';
 import { adopt } from './styles';
 import { bindTooltips, refreshTip } from './tooltip';
@@ -69,6 +70,7 @@ class Row {
 		this.el = h('div', 'pill' + (cfg.colors.background ? ' custom' : ''), { part: 'row' }, [this.playBtn, this.cur, this.seek.el, this.dur, this.msg, this.live]);
 		root.appendChild(this.el);
 		bindTooltips(root);
+		bindMenu(this.el, () => e.track);
 
 		this.playBtn.addEventListener('click', () => {
 			if (e.failure !== 'missing') e.toggle();
