@@ -172,7 +172,7 @@ In every layout:
 | Part | Element |
 | --- | --- |
 | `button` | every icon button, and the download and file page links |
-| `track-menu` | the menu that a right-click or a long press on the player opens. It also has the part `popover`. |
+| `track-menu` | the menu that a right-click or a long press on a player or play button opens, see [Downloads and the track menu](reference.md#downloads-and-the-track-menu). It also has the part `popover`. |
 | `download-option`, `file-page-option` | its entries: download, open the file page |
 | `icon` | every icon |
 | `tooltip` | the tooltip bubble. It lives in its own element at the end of the page, so select it with `.ext-gramophone-tooltip::part(tooltip)`. |

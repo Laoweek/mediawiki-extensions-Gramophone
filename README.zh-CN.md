@@ -257,6 +257,7 @@ The album opens with Div.A3 <playbutton>Div.A3.mp3</playbutton> and ends with E 
 - `title` 指定按钮名称，用于工具提示、屏幕阅读器和锁屏。
 - 用逗号分隔多个文件时，一个按钮会依次播放这些文件。
 - `hidemissing="yes"` 在文件不存在时隐藏按钮。适合为每行添加按钮、但部分录音可能缺失的模板。
+- 在按钮上点击右键（触摸屏上长按）会打开一个菜单，可下载其文件或打开其文件页面。满是按钮的表格无须再单独添加下载链接。
 
 ### 在模板中使用
 
@@ -279,6 +280,9 @@ The album opens with Div.A3 <playbutton>Div.A3.mp3</playbutton> and ends with E 
 
 除非你的设置允许更多操作，否则读者的浏览器只有在读者按下播放按钮后才会连接该网站。
 如需只允许特定网站，请参阅[设置](#设置)。
+
+浏览器通常只会保存来自维基自身地址的下载。来自其他地址的音频（包括单独的上传域名），点击“下载”会在新标签页中打开，读者可在那里保存，
+请参阅 [docs/reference.md](docs/reference.md#downloads-and-the-track-menu)。
 
 ### 选项
 
@@ -304,7 +308,7 @@ JSON 播放列表中的歌曲字段：
 | `coverImageUrl` | 封面图片的维基文件名或网址。 |
 | `lrcFileUrl` | 歌词 LRC 文件的维基文件名或网址。 |
 | `lrcFileOffset` | 加到每个歌词时间上的毫秒数。 |
-| `navigationUrl` | 歌曲链接到的页面或网址。默认情况下，维基文件链接到其文件页面。 |
+| `navigationUrl` | 播放器及其菜单中“打开文件页面”指向的页面或网址，音频缺失时除外。默认情况下，维基文件指向其文件页面。 |
 | `isExplicit` | 设为 `true` 时显示露骨内容标识。 |
 
 [docs/reference.md](docs/reference.md) 说明了各个标签、选项和字段的详细规则。

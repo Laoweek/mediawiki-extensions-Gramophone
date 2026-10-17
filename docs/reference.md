@@ -160,7 +160,7 @@ Track fields:
 | `coverImageUrl` | string | Wiki file name or URL. Wiki images are shown as a 240 px thumbnail. A cover on another site is shown only where the wiki allows it, see [Loading before a click](configuration.md#loading-before-a-click). |
 | `lrcFileUrl` | string | Wiki file name or URL of an LRC lyrics file. |
 | `lrcFileOffset` | number | Milliseconds added to every lyrics timestamp. |
-| `navigationUrl` | string | Page title or URL that the track links to, including any path on the wiki's own site. By default a wiki file links to its file page. |
+| `navigationUrl` | string | Page title or URL that "Open file page" leads to, in the player and in the [track menu](#downloads-and-the-track-menu), including any path on the wiki's own site. Ignored when the audio is missing. By default a wiki file leads to its file page. |
 
 - URLs take the same three forms as in a file list. Addresses in other schemes (for example
   `javascript:` or `data:`) are never used.
@@ -249,6 +249,35 @@ soft hyphens and one trailing dot do not matter. An audio, cover or lyrics URL w
 browsers would refuse, or would read as an IPv4 address written other than as four decimal
 numbers (such as `http://2130706433/` or `http://127.1/`), is not usable. `navigationUrl`
 accepts any path on the site, because the reader follows it with a click.
+
+## Downloads and the track menu
+
+The card has a download button and an "Open file page" button. Very narrow cards, the one-line
+player and play buttons have no room for them, so every layout also has a track menu with the
+same two entries. Readers open it:
+
+- with a right-click on a player or play button
+- with a long press on a touch screen
+- with Shift+F10 or the Menu key while one of the player's controls has keyboard focus
+
+With a mouse the menu opens at the pointer. On a touch screen it opens above the finger, so the
+hand does not cover it. In a card's playlist, the menu offers the song under the pointer, and
+elsewhere the current song. Links and lyrics inside a player keep the browser's own menu, and a
+long press on a seek or volume slider moves the slider instead.
+
+Each entry appears only when the track has its link. Download needs audio that is not missing.
+"Open file page" needs a wiki file or a `navigationUrl`. When the audio is missing,
+`navigationUrl` is ignored, and a missing wiki file leads where its red link would, usually the
+upload form.
+
+Browsers save a download only from the wiki's own origin: the same scheme, host and port as the
+page. For audio from anywhere else, including Wikimedia Commons, a separate upload domain or
+another subdomain, they ignore the request to save, so Download opens the file in a new tab,
+where the reader can save it. A host that sends the file with `Content-Disposition: attachment`
+gets it saved anyway.
+
+To remove downloads, hide both the button and the menu entry, see the example in
+[theming.md](theming.md#examples).
 
 ## Missing files and links
 

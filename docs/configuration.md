@@ -19,7 +19,7 @@ Put these in `LocalSettings.php`, after `wfLoadExtension( 'Gramophone' );`.
 Audio, covers and lyrics can come from other sites. Such a site sees the reader's IP address and
 the referrer the browser sends (see `$wgReferrerPolicy`). The reader's browser contacts it:
 
-- for audio, when the reader presses play
+- for audio, when the reader presses play, or chooses Download in the player or its menu
 - for lyrics, when the reader opens the lyrics panel
 - before any click only where the wiki allows it, see the next section: for a cover when the
   player is displayed, for the check of a `hidemissing=yes` button when the button is displayed,

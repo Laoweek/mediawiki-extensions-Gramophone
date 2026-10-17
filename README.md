@@ -273,6 +273,8 @@ The album opens with Div.A3 <playbutton>Div.A3.mp3</playbutton> and ends with E 
 - With several files, separated by commas, one button plays them one after another.
 - `hidemissing="yes"` hides the button when its file does not exist. This suits templates that
   add a button for every line, where some recordings are missing.
+- A right-click on a button, or a long press on a touch screen, opens a menu to download its
+  file or open its file page. A table full of buttons needs no download links of its own.
 
 ### In templates
 
@@ -296,6 +298,10 @@ A web address works in place of a file name:
 
 The reader's browser contacts that site only when the reader presses play, unless your settings
 allow more. To allow only some sites, see [Settings](#settings).
+
+Browsers usually save a download only from the wiki's own address. Download opens audio from
+anywhere else, including a separate upload domain, in a new tab, where the reader can save it, see
+[Downloads and the track menu](docs/reference.md#downloads-and-the-track-menu).
 
 ### Options
 
@@ -321,7 +327,7 @@ Song fields in a JSON playlist:
 | `coverImageUrl` | The cover picture: a wiki file name or web address. |
 | `lrcFileUrl` | The lyrics: a wiki file name or web address of an LRC file. |
 | `lrcFileOffset` | Milliseconds added to every lyrics time. |
-| `navigationUrl` | The page or web address the song links to. By default a wiki file links to its file page. |
+| `navigationUrl` | The page or web address that "Open file page" leads to, in the player and in its menu, unless the audio is missing. By default a wiki file leads to its file page. |
 | `isExplicit` | `true` shows an explicit content badge. |
 
 [docs/reference.md](docs/reference.md) has the exact rules for every tag, option and field.
