@@ -80,19 +80,22 @@ function onContextMenu(ev: MouseEvent): void {
 	}
 	const hit = find(ev);
 	if (!hit) return;
-	ev.preventDefault();
 	const finger = press !== null;
 	if (press) {
 		// Android fires contextmenu for a long press of a finger.
 		const dragging = !press.timer;
 		cancelPress();
-		if (dragging) return;
-		swallowClick = true;
+		if (dragging) {
+			ev.preventDefault();
+			return;
+		}
 	}
 	const r = hit.target.getBoundingClientRect();
 	// The context menu key gives the event no pointer position inside the control.
 	const inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
-	show(hit, inside ? ev.clientX : r.left, inside ? ev.clientY : r.bottom, finger);
+	if (!show(hit, inside ? ev.clientX : r.left, inside ? ev.clientY : r.bottom, finger)) return;
+	ev.preventDefault();
+	if (finger) swallowClick = true;
 }
 
 function onKeyDown(ev: KeyboardEvent): void {
@@ -105,9 +108,8 @@ function onKeyDown(ev: KeyboardEvent): void {
 	if (ev.key !== 'ContextMenu' && !(ev.key === 'F10' && ev.shiftKey)) return;
 	const hit = find(ev);
 	if (!hit) return;
-	ev.preventDefault();
 	const r = hit.target.getBoundingClientRect();
-	show(hit, r.left, r.bottom, false);
+	if (show(hit, r.left, r.bottom, false)) ev.preventDefault();
 }
 
 function onPointerDown(ev: PointerEvent): void {
@@ -122,8 +124,7 @@ function onPointerDown(ev: PointerEvent): void {
 	const y = ev.clientY;
 	const opens = () => {
 		cancelPress();
-		swallowClick = true;
-		show(hit, x, y, true);
+		if (show(hit, x, y, true)) swallowClick = true;
 	};
 	const timer = hit.target.closest('[role="slider"]') ? 0 : window.setTimeout(opens, LONG_PRESS);
 	press = { id: ev.pointerId, x, y, timer };
@@ -161,11 +162,12 @@ const follow = () => {
 	place(shown.pop, r.left + shown.dx, r.top + shown.dy, shown.above);
 };
 
-function show(hit: Hit, x: number, y: number, above: boolean): void {
+/** Opens the menu of hit at x, y. False when site CSS hides every entry, so the browser's menu may open instead. */
+function show(hit: Hit, x: number, y: number, above: boolean): boolean {
 	// After a long press, Android fires contextmenu too, and may have moved focus back to the control.
 	if (shown && shown.area === hit.area && Date.now() - shown.at < 600) {
-		if (!shown.pop.contains(focused())) (shown.pop.querySelector('.menu-item') as HTMLElement).focus({ preventScroll: true });
-		return;
+		if (!shown.pop.contains(focused())) visibleItems(shown.pop)[0].focus({ preventScroll: true });
+		return true;
 	}
 	close(false);
 	hideTip();
@@ -186,6 +188,9 @@ function show(hit: Hit, x: number, y: number, above: boolean): void {
 		setLink(a, tr.link, tr.nofollow);
 		menu.appendChild(a);
 	}
+	// A wiki without downloads hides download-option.
+	const items = visibleItems(menu);
+	if (!items.length) return false;
 	const restore = focused();
 	if (NATIVE) {
 		try {
@@ -197,10 +202,11 @@ function show(hit: Hit, x: number, y: number, above: boolean): void {
 	place(pop, x, y, above);
 	const r = hit.area.getBoundingClientRect();
 	shown = { pop, area: hit.area, at: Date.now(), restore, dx: x - r.left, dy: y - r.top, above };
-	(menu.firstElementChild as HTMLElement).focus({ preventScroll: true });
+	items[0].focus({ preventScroll: true });
 	addEventListener('scroll', follow, { capture: true, passive: true });
 	addEventListener('resize', dismiss);
 	addEventListener('blur', dismiss);
+	return true;
 }
 
 function close(refocus: boolean): void {
@@ -239,8 +245,13 @@ function item(node: IconNode, text: string, part: string): HTMLAnchorElement {
 	return h('a', 'menu-item', { role: 'menuitem', tabindex: '-1', part }, [icon(node), text]);
 }
 
+/** The entries that site CSS leaves visible. */
+function visibleItems(menu: Element): HTMLElement[] {
+	return Array.from(menu.querySelectorAll<HTMLElement>('.menu-item')).filter((a) => getComputedStyle(a).display !== 'none');
+}
+
 function onMenuKey(ev: KeyboardEvent): void {
-	const items = Array.from((ev.currentTarget as Element).querySelectorAll<HTMLElement>('.menu-item'));
+	const items = visibleItems(ev.currentTarget as Element);
 	const i = items.indexOf(ev.target as HTMLElement);
 	let next = -1;
 	if (ev.key === 'ArrowDown') next = (i + 1) % items.length;

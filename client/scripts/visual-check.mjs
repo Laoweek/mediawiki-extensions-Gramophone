@@ -1098,6 +1098,19 @@ await step('track menu', async () => {
 	check("a context menu event on the open menu is cancelled, so the browser's menu stays away", (await menu(page)) !== null && (await page.evaluate(() => window.menuCancelled)));
 	await page.mouse.click(5, 5);
 	check('a click elsewhere closes the track menu', (await menu(page)) === null);
+	// Site CSS can hide entries, as the example without downloads in docs/theming.md does.
+	const hideAll = await page.addStyleTag({ content: '.ext-gramophone::part(download-option), .ext-gramophone::part(file-page-option) { display: none; }' });
+	await page.click(`${R} >> .play`, { button: 'right' });
+	await page.waitForTimeout(150);
+	check("with every entry hidden by site CSS, a right-click opens no empty menu and leaves the browser's menu", (await menu(page)) === null && !(await page.evaluate(() => window.menuCancelled)));
+	await hideAll.evaluate((el) => el.remove());
+	const hideDownload = await page.addStyleTag({ content: '.ext-gramophone::part(download-option) { display: none; }' });
+	await page.click(`${R} >> .play`, { button: 'right' });
+	await page.waitForTimeout(150);
+	const rest = await menu(page);
+	check('with the download entry hidden by site CSS, the menu focuses the entry that is left', rest !== null && rest.focus === 'Open file page', JSON.stringify(rest));
+	await page.keyboard.press('Escape');
+	await hideDownload.evaluate((el) => el.remove());
 
 	const A = '#demo-album .ext-gramophone';
 	await page.locator(A).scrollIntoViewIfNeeded();

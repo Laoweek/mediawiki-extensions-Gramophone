@@ -1000,15 +1000,16 @@ function onContextMenu(ev) {
   }
   let hit = find(ev);
   if (!hit) return;
-  ev.preventDefault();
   let finger = press !== null;
   if (press) {
     let dragging = !press.timer;
-    if (cancelPress(), dragging) return;
-    swallowClick = !0;
+    if (cancelPress(), dragging) {
+      ev.preventDefault();
+      return;
+    }
   }
   let r = hit.target.getBoundingClientRect(), inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
-  show2(hit, inside ? ev.clientX : r.left, inside ? ev.clientY : r.bottom, finger);
+  show2(hit, inside ? ev.clientX : r.left, inside ? ev.clientY : r.bottom, finger) && (ev.preventDefault(), finger && (swallowClick = !0));
 }
 function onKeyDown(ev) {
   if (shown && ev.key === "Escape" && !ev.composedPath().includes(shown.pop)) {
@@ -1018,16 +1019,15 @@ function onKeyDown(ev) {
   if (ev.key !== "ContextMenu" && !(ev.key === "F10" && ev.shiftKey)) return;
   let hit = find(ev);
   if (!hit) return;
-  ev.preventDefault();
   let r = hit.target.getBoundingClientRect();
-  show2(hit, r.left, r.bottom, !1);
+  show2(hit, r.left, r.bottom, !1) && ev.preventDefault();
 }
 function onPointerDown(ev) {
   if (swallowClick = !1, cancelPress(), shown && !ev.composedPath().includes(shown.pop) && close(!1), ev.pointerType === "mouse" || !ev.isPrimary) return;
   let hit = find(ev);
   if (!hit) return;
   let x = ev.clientX, y = ev.clientY, opens = () => {
-    cancelPress(), swallowClick = !0, show2(hit, x, y, !0);
+    cancelPress(), show2(hit, x, y, !0) && (swallowClick = !0);
   }, timer2 = hit.target.closest('[role="slider"]') ? 0 : window.setTimeout(opens, LONG_PRESS);
   press = { id: ev.pointerId, x, y, timer: timer2 }, addEventListener("pointermove", onPressMove, !0), addEventListener("pointerup", cancelPress, !0), addEventListener("pointercancel", cancelPress, !0);
 }
@@ -1046,10 +1046,8 @@ var dismiss = () => close(!1), follow = () => {
   place2(shown.pop, r.left + shown.dx, r.top + shown.dy, shown.above);
 };
 function show2(hit, x, y, above) {
-  if (shown && shown.area === hit.area && Date.now() - shown.at < 600) {
-    shown.pop.contains(focused()) || shown.pop.querySelector(".menu-item").focus({ preventScroll: !0 });
-    return;
-  }
+  if (shown && shown.area === hit.area && Date.now() - shown.at < 600)
+    return shown.pop.contains(focused()) || visibleItems(shown.pop)[0].focus({ preventScroll: !0 }), !0;
   close(!1), hide();
   let pop = popFor(hit.root), menu = pop.firstElementChild, tr = hit.track;
   if (menu.setAttribute("aria-label", tr.title), menu.textContent = "", tr.src) {
@@ -1060,6 +1058,8 @@ function show2(hit, x, y, above) {
     let a = item(ExternalLink, t("gramophone-open-file-page"), "file-page-option");
     setLink(a, tr.link, tr.nofollow), menu.appendChild(a);
   }
+  let items = visibleItems(menu);
+  if (!items.length) return !1;
   let restore = focused();
   if (NATIVE2)
     try {
@@ -1069,7 +1069,7 @@ function show2(hit, x, y, above) {
   else pop.hidden = !1;
   place2(pop, x, y, above);
   let r = hit.area.getBoundingClientRect();
-  shown = { pop, area: hit.area, at: Date.now(), restore, dx: x - r.left, dy: y - r.top, above }, menu.firstElementChild.focus({ preventScroll: !0 }), addEventListener("scroll", follow, { capture: !0, passive: !0 }), addEventListener("resize", dismiss), addEventListener("blur", dismiss);
+  return shown = { pop, area: hit.area, at: Date.now(), restore, dx: x - r.left, dy: y - r.top, above }, items[0].focus({ preventScroll: !0 }), addEventListener("scroll", follow, { capture: !0, passive: !0 }), addEventListener("resize", dismiss), addEventListener("blur", dismiss), !0;
 }
 function close(refocus) {
   if (!shown) return;
@@ -1091,8 +1091,11 @@ function popFor(root) {
 function item(node, text, part) {
   return h("a", "menu-item", { role: "menuitem", tabindex: "-1", part }, [icon(node), text]);
 }
+function visibleItems(menu) {
+  return Array.from(menu.querySelectorAll(".menu-item")).filter((a) => getComputedStyle(a).display !== "none");
+}
 function onMenuKey(ev) {
-  let items = Array.from(ev.currentTarget.querySelectorAll(".menu-item")), i = items.indexOf(ev.target), next = -1;
+  let items = visibleItems(ev.currentTarget), i = items.indexOf(ev.target), next = -1;
   if (ev.key === "ArrowDown") next = (i + 1) % items.length;
   else if (ev.key === "ArrowUp") next = (i - 1 + items.length) % items.length;
   else if (ev.key === "Home") next = 0;
